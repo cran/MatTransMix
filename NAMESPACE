@@ -1,0 +1,5 @@
+useDynLib(MatTransMix, .registration = TRUE)
+importFrom("stats", "var")
+export(MatTrans.EM)
+export(MatTrans.init)
+
