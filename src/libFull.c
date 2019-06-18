@@ -75,78 +75,115 @@ void cpyk2(double **a, int nrows, int ncols, double ***b, int k)
 
 
 // Trans transformation for matrix Y
-void Trans_trans(int p, int T, double *la, double *nu, double **Y, double **MY){
+void Trans_trans(int p, int T, double *la, double *nu, double **Y, double **MY, int trans_type){
 
-  int j, t;
+	int j, t;
 
-  for (j=0; j<p; j++){
-    for(t=0; t<T; t++) {
-    	if(Y[j][t] >= 0){
-    		 if (fabs(la[j] + nu[t])<1e-12){
-			MY[j][t] = log(Y[j][t] + 1.0);
-    		}
-		else{
+	if(trans_type == 1){
+  		for (j=0; j<p; j++){
+    			for(t=0; t<T; t++) {
+    				if(Y[j][t] >= 0){
+    		 			if (fabs(la[j] + nu[t])<1e-12){
+						MY[j][t] = log(Y[j][t] + 1.0);
+    					}
+					else{
 			
-			MY[j][t] = (pow((Y[j][t] + 1.0), la[j]+ nu[t]) - 1.0) / (la[j] + nu[t]);
-		}
-    	}
-    	else{
-    		 if (fabs(la[j] + nu[t] - 2.0)<1e-12){
-		 	MY[j][t] = -log(-Y[j][t] + 1.0);
+						MY[j][t] = (pow((Y[j][t] + 1.0), la[j]+ nu[t]) - 1.0) / (la[j] + nu[t]);
+					}
+    				}
+    				else{
+    					if (fabs(la[j] + nu[t] - 2.0)<1e-12){
+		 				MY[j][t] = -log(-Y[j][t] + 1.0);
 			
-    		}
-		else{
-			MY[j][t] = -(pow((-Y[j][t] + 1.0), 2.0- la[j]- nu[t]) - 1.0) / (2.0- la[j] - nu[t]);
-		}
+    					}
+					else{
+						MY[j][t] = -(pow((-Y[j][t] + 1.0), 2.0- la[j]- nu[t]) - 1.0) / (2.0- la[j] - nu[t]);
+					}
 		
-    	}
+    				}
 	     
-    }
+    			}
       
-  }
+  		}
+ 	}
+
+	else{
+ 
+		for (j=0; j<p; j++){
+			if (fabs(la[j] + nu[t])<1e-12){
+      				for(t=0; t<T; t++) {
+					MY[j][t] = Y[j][t];
+      				}
+   			}else{
+      				for(t=0; t<T; t++) {
+					MY[j][t] = (exp(Y[j][t] * (la[j]  + nu[t])) - 1) / (la[j] + nu[t]);
+      				}
+    			}
+      
+  		}
+
+	}
 
 }
 
-void Trans_trans_whole(int n, int p, int T, double *la, double *nu, double ***Y, double ***MY){
+void Trans_trans_whole(int n, int p, int T, double *la, double *nu, double ***Y, double ***MY, int trans_type){
 
-  int i, j, t;
- for(i=0; i<n; i++){
-  for (j=0; j<p; j++){
-    for(t=0; t<T; t++) {
+	int i, j, t;
+	if(trans_type == 1){
+ 		for(i=0; i<n; i++){
+ 			for (j=0; j<p; j++){
+    				for(t=0; t<T; t++) {
 
-
-
-
-    	if(Y[j][t][i] >= 0){
-    		 if (fabs(la[j] + nu[t])<1e-12){
-			MY[j][t][i] = log(Y[j][t][i] + 1.0);
-    		}
-		else{
+    					if(Y[j][t][i] >= 0){
+    		 				if (fabs(la[j] + nu[t])<1e-12){
+							MY[j][t][i] = log(Y[j][t][i] + 1.0);
+    						}
+						else{
 			
-			MY[j][t][i] = (pow((Y[j][t][i] + 1.0), la[j]+ nu[t]) - 1.0) / (la[j] + nu[t]);
-		}
-    	}
-    	else{
-    		 if (fabs(la[j] + nu[t] - 2.0)<1e-12){
-			MY[j][t][i] = -log(-Y[j][t][i] + 1.0);
-		}
-		else{
-			MY[j][t][i] = -(pow((-Y[j][t][i] + 1.0), 2.0- la[j]- nu[t]) - 1.0) / (2.0- la[j] - nu[t]);
+							MY[j][t][i] = (pow((Y[j][t][i] + 1.0), la[j]+ nu[t]) - 1.0) / (la[j] + nu[t]);
+						}
+    					}
+    					else{
+    						if (fabs(la[j] + nu[t] - 2.0)<1e-12){
+							MY[j][t][i] = -log(-Y[j][t][i] + 1.0);
+						}
+						else{
+							MY[j][t][i] = -(pow((-Y[j][t][i] + 1.0), 2.0- la[j]- nu[t]) - 1.0) / (2.0- la[j] - nu[t]);
 
-		}
+						}
 		
-    	}
+    					}
        
-    }    
-  }
- }
+    				}    
+  			}
+ 		}
+ 	}
+ 	else{
+ 		for(i=0; i<n; i++){
+
+  			for (j=0; j<p; j++){
+    				if (fabs(la[j] + nu[t])<1e-12){
+      					for(t=0; t<T; t++) {
+						MY[j][t][i] = Y[j][t][i];
+      					}
+    				}else{
+      					for(t=0; t<T; t++) {
+						MY[j][t][i] = (exp(Y[j][t][i] * (la[j] + nu[t])) - 1) / (la[j] + nu[t]);
+      					}
+    				}
+      
+  			}
+
+ 		}
+
+ 	}
   
 }
 
-double mGpdf_Trans_Full(int p, int T, double *la, double *nu, double **Y, double **Mu, double **invS, double **invPsi, double detS, double detPsi){
+double mGpdf_Trans_Full(int p, int T, double *la, double *nu, double **Y, double **Mu, double **invS, double **invPsi, double detS, double detPsi, int trans_type){
 
 	int j, t;
-	double trace = 0.0, dens, jac = 1.0;
+	double trace = 0.0, dens, jac;
 	double **MY, **tMY, **temp1, **temp2, **maha;
 
 	MAKE_MATRIX(maha, p, p);
@@ -157,7 +194,7 @@ double mGpdf_Trans_Full(int p, int T, double *la, double *nu, double **Y, double
 
 
 	
-  	Trans_trans(p, T, la, nu, Y, MY);
+  	Trans_trans(p, T, la, nu, Y, MY, trans_type);
 	mat_(p, T, MY, Mu);
 
 	tA(MY, T, p, tMY);
@@ -176,20 +213,36 @@ double mGpdf_Trans_Full(int p, int T, double *la, double *nu, double **Y, double
 		
 	dens = 1.0 / pow((2*PI), p*T/2.0) / pow(detS, T/2.0) / pow(detPsi, p/2.0) * exp(-1.0 / 2.0 * trace);
 
+ 	if(trans_type == 1){
+		jac = 1.0;
+		for(j=0; j<p; j++){
 
-	for(j=0; j<p; j++){
+			for(t=0; t<T; t++){
 
-		for(t=0; t<T; t++){
+				if(Y[j][t] >= 0){
+					jac = jac * pow(Y[j][t] + 1.0, la[j] + nu[t] - 1.0);
+				}
+				else{
+					jac = jac * pow(-Y[j][t] + 1.0, 1.0 - la[j] - nu[t]);
 
-			if(Y[j][t] >= 0){
-				jac = jac * pow(Y[j][t] + 1.0, la[j] + nu[t] - 1.0);
-			}
-			else{
-				jac = jac * pow(-Y[j][t] + 1.0, 1.0 - la[j] - nu[t]);
-
-			}
+				}
 	
-		}	
+			}	
+		}
+	}
+	else{
+		jac = 0.0;
+
+		for(j=0; j<p; j++){
+
+			for(t=0; t<T; t++){
+
+				jac = jac + (la[j] + nu[t]) * Y[j][t];
+	
+			}	
+		}
+		jac = exp(jac); 
+
 	}
 
 	dens = dens * jac;
@@ -205,7 +258,7 @@ double mGpdf_Trans_Full(int p, int T, double *la, double *nu, double **Y, double
 
 
 
-double mGloglik_Trans_Full(int p, int T, int n, int K, double ***Y, double **la, double **nu, double *tau, double ***Mu, double ***invS, double ***invPsi, double *detS, double *detPsi, double scale){
+double mGloglik_Trans_Full(int p, int T, int n, int K, double ***Y, double **la, double **nu, double *tau, double ***Mu, double ***invS, double ***invPsi, double *detS, double *detPsi, double scale, int trans_type){
 
 	int i,k,j1,j2,j,t;
 	double loglik = 0.0;
@@ -263,7 +316,7 @@ double mGloglik_Trans_Full(int p, int T, int n, int K, double ***Y, double **la,
 				nu_new[t] = nu[k][t]/scale;
 
 			}
-			dens = mGpdf_Trans_Full(p, T, la_new, nu_new, Yi_new, Muk_new, invSk_new, invPsik, detS[k]*pow(scale, 2.0*p), detPsi[k]);
+			dens = mGpdf_Trans_Full(p, T, la_new, nu_new, Yi_new, Muk_new, invSk_new, invPsik, detS[k]*pow(scale, 2.0*p), detPsi[k], trans_type);
 
 
 			ll += tau[k] * dens;
@@ -291,7 +344,7 @@ double mGloglik_Trans_Full(int p, int T, int n, int K, double ***Y, double **la,
 
 
 
-void Estep_Trans_Full(int p, int T, int n, int K, double ***Y, double **la, double **nu, double *tau, double ***Mu, double ***invS, double ***invPsi, double *detS, double *detPsi, double **gamma){
+void Estep_Trans_Full(int p, int T, int n, int K, double ***Y, double **la, double **nu, double *tau, double ***Mu, double ***invS, double ***invPsi, double *detS, double *detPsi, double **gamma, int trans_type){
 
 	int i,k;		
 	double dens =0.0, *sum_gamma, **Yi, **Muk, **invSk, **invPsik;
@@ -324,7 +377,7 @@ void Estep_Trans_Full(int p, int T, int n, int K, double ***Y, double **la, doub
 				cpyk(invS, p, p, k, invSk);
 				cpyk(invPsi, T, T, k, invPsik);
 
-				dens = mGpdf_Trans_Full(p, T, la[k], nu[k], Yi, Muk, invSk, invPsik, detS[k], detPsi[k]);
+				dens = mGpdf_Trans_Full(p, T, la[k], nu[k], Yi, Muk, invSk, invPsik, detS[k], detPsi[k], trans_type);
 
 				gamma[i][k] = tau[k] * dens;
 
@@ -360,7 +413,7 @@ void Estep_Trans_Full(int p, int T, int n, int K, double ***Y, double **la, doub
 
 
 // Q-function
-double Q1(int n, int p, int T, double *la_nonzero, double *nu, int *index, double ***Y, double *gamma_k, double **invSk, double **invPsik, int Mu_type){
+double Q1(int n, int p, int T, double *la_nonzero, double *nu, int *index, double ***Y, double *gamma_k, double **invSk, double **invPsik, int Mu_type, int trans_type){
   
 	int i, j, t, count;
 	double res, jac, sum_gamma, det;
@@ -470,7 +523,7 @@ double Q1(int n, int p, int T, double *la_nonzero, double *nu, int *index, doubl
 	}
 
 
-	Trans_trans_whole(n, p, T, la, nu, Y, MY);
+	Trans_trans_whole(n, p, T, la, nu, Y, MY, trans_type);
 	res = 0;
 	Anull(Muk, p, T);
 	if(Mu_type == 2){
@@ -558,27 +611,48 @@ double Q1(int n, int p, int T, double *la_nonzero, double *nu, int *index, doubl
 		}
 
 	}
+	if(trans_type == 1){
 
-	for(i=0; i<n; i++){
+		for(i=0; i<n; i++){
 
-		jac = 0;
+			jac = 0;
 
-		for(j=0; j<p; j++){
+			for(j=0; j<p; j++){
 
-			for(t=0; t<T; t++){
+				for(t=0; t<T; t++){
 
-				if(Y[j][t][i] >= 0){
-					jac = jac + (la[j] + nu[t] - 1) * log(Y[j][t][i] + 1);
-				}
-				else{
-					jac = jac - (la[j] + nu[t] - 1) *  log(-Y[j][t][i] + 1);
+					if(Y[j][t][i] >= 0){
+						jac = jac + (la[j] + nu[t] - 1) * log(Y[j][t][i] + 1);
+					}
+					else{
+						jac = jac - (la[j] + nu[t] - 1) *  log(-Y[j][t][i] + 1);
 
-				}
+					}
 	
-			}	
+				}	
+			}
+
+			res = res + gamma_k[i] * jac;
+		}
+	}
+	else{
+		for(i=0; i<n; i++){
+
+			jac = 0;
+
+			for(j=0; j<p; j++){
+
+				for(t=0; t<T; t++){
+
+					
+					jac = jac + Y[j][t][i] * (la[j] + nu[t]);
+	
+				}	
+			}
+
+			res = res + gamma_k[i] * jac;
 		}
 
-		res = res + gamma_k[i] * jac;
 	}
 
 
@@ -613,7 +687,7 @@ double Q1(int n, int p, int T, double *la_nonzero, double *nu, int *index, doubl
 
 
 // Q-function
-double Q1_same(int n, int p, int T, double *la_nonzero, double *nu, int *index, double ***Y, double *gamma_k, double **invSk, double **invPsik, int Mu_type){
+double Q1_same(int n, int p, int T, double *la_nonzero, double *nu, int *index, double ***Y, double *gamma_k, double **invSk, double **invPsik, int Mu_type, int trans_type){
   
 	int i, j, t, count;
 	double res, jac, sum_gamma, det;
@@ -717,7 +791,7 @@ double Q1_same(int n, int p, int T, double *la_nonzero, double *nu, int *index, 
 	}
 
 
-	Trans_trans_whole(n, p, T, la, nu, Y, MY);
+	Trans_trans_whole(n, p, T, la, nu, Y, MY, trans_type);
 	res = 0;
 	Anull(Muk, p, T);
 	if(Mu_type == 2){
@@ -806,28 +880,48 @@ double Q1_same(int n, int p, int T, double *la_nonzero, double *nu, int *index, 
 
 	}
 
-	for(i=0; i<n; i++){
+	if(trans_type == 1){
+		for(i=0; i<n; i++){
 
-		jac = 0;
+			jac = 0;
 
-		for(j=0; j<p; j++){
+			for(j=0; j<p; j++){
 
-			for(t=0; t<T; t++){
+				for(t=0; t<T; t++){
 
-				if(Y[j][t][i] >= 0){
-					jac = jac + (la[j] + nu[t] - 1) * log(Y[j][t][i] + 1);
-				}
-				else{
-					jac = jac - (la[j] + nu[t] - 1) *  log(-Y[j][t][i] + 1);
-
-				}
+					if(Y[j][t][i] >= 0){
+						jac = jac + (la[j] + nu[t] - 1) * log(Y[j][t][i] + 1);
+					}
+					else{
+						jac = jac - (la[j] + nu[t] - 1) *  log(-Y[j][t][i] + 1);
 	
-			}	
+					}
+	
+				}	
+			}
+
+			res = res + gamma_k[i] * jac;
+		}
+	}
+	else{
+		for(i=0; i<n; i++){
+
+			jac = 0;
+
+			for(j=0; j<p; j++){
+
+				for(t=0; t<T; t++){
+
+					
+					jac = jac + Y[j][t][i] * (la[j] + nu[t]);
+	
+				}	
+			}
+
+			res = res + gamma_k[i] * jac;
 		}
 
-		res = res + gamma_k[i] * jac;
 	}
-
 
 
 	FREE_VECTOR(la);
@@ -858,7 +952,7 @@ double Q1_same(int n, int p, int T, double *la_nonzero, double *nu, int *index, 
 
 
 // Q-function
-double Q2(int n, int p, int T, double *nu_nonzero, double *la, int *index, double ***Y, double *gamma_k, double **invSk, double **invPsik, int Mu_type){
+double Q2(int n, int p, int T, double *nu_nonzero, double *la, int *index, double ***Y, double *gamma_k, double **invSk, double **invPsik, int Mu_type, int trans_type){
   
 	int i, j, t, count;
 	double res, jac, sum_gamma, det;
@@ -968,7 +1062,7 @@ double Q2(int n, int p, int T, double *nu_nonzero, double *la, int *index, doubl
 	}
 
 
-	Trans_trans_whole(n, p, T, la, nu, Y, MY);
+	Trans_trans_whole(n, p, T, la, nu, Y, MY, trans_type);
 	res = 0;
 	Anull(Muk, p, T);
 
@@ -1063,30 +1157,48 @@ double Q2(int n, int p, int T, double *nu_nonzero, double *la, int *index, doubl
 	}
 
 
+	if(trans_type == 1){
+		for(i=0; i<n; i++){
+
+			jac = 0;
+
+			for(j=0; j<p; j++){
+
+				for(t=0; t<T; t++){
+
+					if(Y[j][t][i] >= 0){
+						jac = jac + (la[j] + nu[t] - 1) * log(Y[j][t][i] + 1);
+					}	
+					else{
+						jac = jac - (la[j] + nu[t] - 1) * log(-Y[j][t][i] + 1);
+
+					}
 	
-	for(i=0; i<n; i++){
+				}	
+			}
 
-		jac = 0;
+			res = res + gamma_k[i] * jac;
+		}
+	}
+	else{
+		for(i=0; i<n; i++){
 
-		for(j=0; j<p; j++){
+			jac = 0;
 
-			for(t=0; t<T; t++){
+			for(j=0; j<p; j++){
 
-				if(Y[j][t][i] >= 0){
-					jac = jac + (la[j] + nu[t] - 1) * log(Y[j][t][i] + 1);
-				}
-				else{
-					jac = jac - (la[j] + nu[t] - 1) * log(-Y[j][t][i] + 1);
+				for(t=0; t<T; t++){
 
-				}
+					
+					jac = jac + Y[j][t][i] * (la[j] + nu[t]);
 	
-			}	
+				}	
+			}
+
+			res = res + gamma_k[i] * jac;
 		}
 
-		res = res + gamma_k[i] * jac;
 	}
-
-
 
 	FREE_VECTOR(nu);
 	FREE_MATRIX(MYi);
@@ -1117,7 +1229,7 @@ double Q2(int n, int p, int T, double *nu_nonzero, double *la, int *index, doubl
 
 
 
-double Mstep_Trans_Full(int p, int T, int n, int K, double *misc_double, double ***Y, double **la, double **nu, double **gamma, double ***invS, double ***Mu, double ***invPsi, double *detS, double *detPsi, double *tau, int Mu_type, int Sigma_type, int Psi_type, int la_type){
+double Mstep_Trans_Full(int p, int T, int n, int K, double *misc_double, double ***Y, double **la, double **nu, double **gamma, double ***invS, double ***Mu, double ***invPsi, double *detS, double *detPsi, double *tau, int Mu_type, int Sigma_type, int Psi_type, int la_type, int trans_type){
 
 	int i,j,k,t,sum_index1, count, *index1, sum_index2, *index2;
 	double *Q_value, Q_value0, min_value, eps, det, *sum_gamma, *gamma_k, **Psi, **S, **temp1, **temp2, **temp3, **temp4, **invPsik, *Eig, **L;
@@ -1233,7 +1345,7 @@ double Mstep_Trans_Full(int p, int T, int n, int K, double *misc_double, double 
 
 	for(k=0; k<K; k++){
 
-		Trans_trans_whole(n, p, T, la[k], nu[k], Y, MY);
+		Trans_trans_whole(n, p, T, la[k], nu[k], Y, MY, trans_type);
 
 
 		if(Mu_type == 2){
@@ -1305,51 +1417,47 @@ double Mstep_Trans_Full(int p, int T, int n, int K, double *misc_double, double 
 
 
 	if(Sigma_type == 1){
-		modelB1(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detS);	
+		modelB1(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detS, trans_type);	
 	}
 	else if(Sigma_type == 2){
-		modelB2(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detS);
+		modelB2(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detS, trans_type);
 	}
 	else if(Sigma_type == 3){
-		modelB3(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detS);
+		modelB3(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detS, trans_type);
 	}
 	else if(Sigma_type == 4){
-		modelB4(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detS);
+		modelB4(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detS, trans_type);
 	}
 	else if(Sigma_type == 5){
-		modelB5(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detS);
+		modelB5(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detS, trans_type);
 	}
 	else if(Sigma_type == 6){
-		modelB6(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detS);
+		modelB6(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detS, trans_type);
 	}
 	else if(Sigma_type == 7){
-		modelB7(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detS);
+		modelB7(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detS, trans_type);
 	}
 	else if(Sigma_type == 8){
-		modelB8(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detS);
+		modelB8(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detS, trans_type);
 	}
 	else if(Sigma_type == 9){
-		modelB9(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detS);
+		modelB9(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detS, trans_type);
 	}
 	else if(Sigma_type == 10){
-		modelB10(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detS);
+		modelB10(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detS, trans_type);
 	}
 	else if(Sigma_type == 11){
-		modelB11(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detS);
+		modelB11(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detS, trans_type);
 	}
 	else if(Sigma_type == 12){
-		modelB12(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detS);
+		modelB12(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detS, trans_type);
 	}
 	else if(Sigma_type == 13){
-		modelB13(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detS);
+		modelB13(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detS, trans_type);
 	}
 	else if(Sigma_type == 14){
-		modelB14(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detS);
+		modelB14(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detS, trans_type);
 	}
-
-
-
-
 
 
 	if(Psi_type == 0){
@@ -1366,23 +1474,22 @@ double Mstep_Trans_Full(int p, int T, int n, int K, double *misc_double, double 
 		
 	}
 	else if(Psi_type == 1){
-		modelA1(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detPsi);		
+		modelA1(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detPsi, trans_type);		
 	}
 	else if(Psi_type == 2){
-		modelA2(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detPsi);		
+		modelA2(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detPsi, trans_type);		
 	}
 	else if(Psi_type == 3){
-		modelA3(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detPsi);		
+		modelA3(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detPsi, trans_type);		
 	}
 	else if(Psi_type == 4){
-		modelA4(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detPsi);		
+		modelA4(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detPsi, trans_type);		
 	}
 	else if(Psi_type == 5){
-		modelA5(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detPsi);		
+		modelA5(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detPsi, trans_type);		
 	}
 	else{
-
-		modelA6(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detPsi);
+		modelA6(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detPsi, trans_type);
 	}
 
 
@@ -1421,7 +1528,7 @@ double Mstep_Trans_Full(int p, int T, int n, int K, double *misc_double, double 
 				}
 			
 
-				min_value = simplex1(Q1, n, p, T, nu[k], index1, Y, gamma_k, invSk, invPsik, la_nonzero, eps, 0.1, Mu_type);
+				min_value = simplex1(Q1, n, p, T, nu[k], index1, Y, gamma_k, invSk, invPsik, la_nonzero, eps, 0.1, Mu_type, trans_type);
 
 				count = 0;
 				for(j=0; j<p; j++){
@@ -1450,7 +1557,7 @@ double Mstep_Trans_Full(int p, int T, int n, int K, double *misc_double, double 
 					la_nonzero[j] = 1.0;		
 				}			
 
-				Q_value[k] = Q1(n, p, T, la_nonzero, nu[k], index1, Y, gamma_k, invSk, invPsik, Mu_type);
+				Q_value[k] = Q1(n, p, T, la_nonzero, nu[k], index1, Y, gamma_k, invSk, invPsik, Mu_type, trans_type);
 
 
 				FREE_VECTOR(la_nonzero);
@@ -1495,7 +1602,7 @@ double Mstep_Trans_Full(int p, int T, int n, int K, double *misc_double, double 
 
 				la_nonzero[0] = la[k][0];
 
-				min_value = simplex1(Q1_same, n, p, T, nu[k], index1, Y, gamma_k, invSk, invPsik, la_nonzero, eps, 0.1, Mu_type);
+				min_value = simplex1(Q1_same, n, p, T, nu[k], index1, Y, gamma_k, invSk, invPsik, la_nonzero, eps, 0.1, Mu_type, trans_type);
 				//printf(" Q  %lf\n", la_nonzero[0]);
 
 
@@ -1520,7 +1627,7 @@ double Mstep_Trans_Full(int p, int T, int n, int K, double *misc_double, double 
 					la_nonzero[j] = 1.0;		
 				}			
 
-				Q_value[k] = Q1(n, p, T, la_nonzero, nu[k], index1, Y, gamma_k, invSk, invPsik, Mu_type);
+				Q_value[k] = Q1(n, p, T, la_nonzero, nu[k], index1, Y, gamma_k, invSk, invPsik, Mu_type, trans_type);
 
 
 				FREE_VECTOR(la_nonzero);
@@ -1565,7 +1672,7 @@ double Mstep_Trans_Full(int p, int T, int n, int K, double *misc_double, double 
 			
 
 
-			min_value = simplex2(Q2, n, p, T, la[k], index2, Y, gamma_k, invSk, invPsik, nu_nonzero, eps, 0.1, Mu_type);
+			min_value = simplex2(Q2, n, p, T, la[k], index2, Y, gamma_k, invSk, invPsik, nu_nonzero, eps, 0.1, Mu_type, trans_type);
 
 
 
@@ -1598,7 +1705,7 @@ double Mstep_Trans_Full(int p, int T, int n, int K, double *misc_double, double 
 			}			
 
 
-			Q_value[k] = Q2(n, p, T, nu_nonzero, la[k], index2, Y, gamma_k, invSk, invPsik, Mu_type);
+			Q_value[k] = Q2(n, p, T, nu_nonzero, la[k], index2, Y, gamma_k, invSk, invPsik, Mu_type, trans_type);
 
 
 			FREE_VECTOR(nu_nonzero);
@@ -1648,29 +1755,34 @@ double Mstep_Trans_Full(int p, int T, int n, int K, double *misc_double, double 
 
 
 
-void EM_Trans_Full(int p, int T, int n, int K, double ***Y, double **la, double **nu, int max_iter, double *misc_double, double *tau, double ***Mu, double ***invS, double ***invPsi, double *detS, double *detPsi, double **gamma, int *id, double *ll, int *conv, int Mu_type, int Sigma_type, int Psi_type, int la_type, double scale){
+void EM_Trans_Full(int p, int T, int n, int K, double ***Y, double **la, double **nu, int max_iter, double *misc_double, double *tau, double ***Mu, double ***invS, double ***invPsi, double *detS, double *detPsi, double **gamma, int *id, double *ll, int *conv, int Mu_type, int Sigma_type, int Psi_type, int la_type, double scale, int trans_type){
 	int i,k,iter,M = 0;
-	double eps,loglik_old,loglik,max;
+	double eps,loglik_old,loglik = 0.0,max;
 
  	eps = misc_double[0];
 	loglik_old = -INFINITY;
 	iter = 0;
 
+	//printf(" trans_type  %d\n", trans_type);
 	do{
+		//if(loglik_old <loglik){
+		//	printf(" ll  %lf\n", loglik_old);
+		//}
 		loglik = loglik_old; 
 		
 		iter += 1;
 
-		Mstep_Trans_Full(p, T, n, K, misc_double, Y, la, nu, gamma, invS, Mu, invPsi, detS, detPsi, tau, Mu_type, Sigma_type, Psi_type, la_type);
+			
+		Mstep_Trans_Full(p, T, n, K, misc_double, Y, la, nu, gamma, invS, Mu, invPsi, detS, detPsi, tau, Mu_type, Sigma_type, Psi_type, la_type, trans_type);
 
 
  
-		Estep_Trans_Full(p, T, n, K, Y, la, nu, tau, Mu, invS, invPsi, detS, detPsi, gamma);
+		Estep_Trans_Full(p, T, n, K, Y, la, nu, tau, Mu, invS, invPsi, detS, detPsi, gamma, trans_type);
 
 
 		
- 		loglik_old = mGloglik_Trans_Full(p, T, n, K, Y, la, nu, tau, Mu, invS, invPsi, detS, detPsi, 1.0);
-
+ 		loglik_old = mGloglik_Trans_Full(p, T, n, K, Y, la, nu, tau, Mu, invS, invPsi, detS, detPsi, 1.0, trans_type);
+		
 					
 	}
 
@@ -1678,7 +1790,7 @@ void EM_Trans_Full(int p, int T, int n, int K, double ***Y, double **la, double 
 
 
 
-	ll[0] = mGloglik_Trans_Full(p, T, n, K, Y, la, nu, tau, Mu, invS, invPsi, detS, detPsi, scale);
+	ll[0] = mGloglik_Trans_Full(p, T, n, K, Y, la, nu, tau, Mu, invS, invPsi, detS, detPsi, scale, trans_type);
 
 
 	M += K-1;
@@ -1709,7 +1821,7 @@ void EM_Trans_Full(int p, int T, int n, int K, double ***Y, double **la, double 
 	else if(Psi_type == 6){M += K*T*(T+1)/2-K;}
 	
 
-	if(la[0][0] != 0.0){M += K*p+K*(T-1);}
+	if(la[0][0] != 1.0){M += K*p+K*(T-1);}
 
 
 	ll[1] = log(n)*M -2.0*ll[0];

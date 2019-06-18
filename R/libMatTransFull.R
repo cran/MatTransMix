@@ -189,7 +189,7 @@ code.back <- function(num){
 
 
 
-MatTrans.EM <- function(Y, initial = NULL, id = NULL, la = NULL, nu = NULL, tau = NULL, Mu = NULL, Sigma = NULL, Psi = NULL, model = NULL, la.type = 0, tol = 1e-05, max.iter = 1000, size.control = 0, silent = TRUE){
+MatTrans.EM <- function(Y, initial = NULL, id = NULL, la = NULL, nu = NULL, tau = NULL, Mu = NULL, Sigma = NULL, Psi = NULL, model = NULL, trans = "Power", la.type = 0, tol = 1e-05, max.iter = 1000, size.control = 0, silent = TRUE){
 
 	A <- dim(Y)
 	p <- A[1]
@@ -259,9 +259,11 @@ MatTrans.EM <- function(Y, initial = NULL, id = NULL, la = NULL, nu = NULL, tau 
 
 			for(iter in 1:dim(index)[2]){
 
-
 				
-				misc_int <- c(p, T, n, K, max.iter, index[1,iter], index[2,iter], index[3,iter], la.type)
+				if(trans == "Power"){trans.type <- 1}
+				else if(trans == "Manly"){trans.type <- 2}
+				#cat("trans.type", trans.type, "\n")
+				misc_int <- c(p, T, n, K, max.iter, index[1,iter], index[2,iter], index[3,iter], la.type, trans.type)
 
 				try0 <- try(temp <- .C("run_Mat_Trans_Full", y = as.double(initial[[i]]$y), misc_int = as.integer(misc_int), misc_double = as.double(misc_double), tau = as.double(initial[[i]]$tau), la1 = as.double(as.vector(la)), nu1 = as.double(as.vector(nu)), Mu1 = as.double(initial[[i]]$Mu1), invS1 = as.double(initial[[i]]$invS1), invPsi1 = as.double(initial[[i]]$invPsi1), detS = as.double(initial[[i]]$detS), detPsi = as.double(initial[[i]]$detPsi), gamma1 = as.double(initial[[i]]$gamma1), id = as.integer(id), ll = as.double(ll), conv = as.integer(conv), scale = as.double(initial[[i]]$scale), PACKAGE = "MatTransMix"), silent = TRUE)
 

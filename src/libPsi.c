@@ -15,7 +15,7 @@
 
 
 
-void modelA4(int p, int T, int n, int K, double ***Y, double **la, double **nu, double *tau, double ***Mu, double **gamma, double ***invS, double ***invPsi, double *detPsi){
+void modelA4(int p, int T, int n, int K, double ***Y, double **la, double **nu, double *tau, double ***Mu, double **gamma, double ***invS, double ***invPsi, double *detPsi, int trans_type){
   
 
 	int k,i,t1,t2,t,iter=0;
@@ -81,7 +81,7 @@ void modelA4(int p, int T, int n, int K, double ***Y, double **la, double **nu, 
 	Anull3(WC, T, T, K);
 	for(k=0; k<K; k++){
 
-		Trans_trans_whole(n, p, T, la[k], nu[k], Y, MY);
+		Trans_trans_whole(n, p, T, la[k], nu[k], Y, MY, trans_type);
 
 		cpyk(invS, p, p, k, invSk);
 		cpyk(Mu, p, T, k, Muk);
@@ -382,7 +382,7 @@ void modelA4(int p, int T, int n, int K, double ***Y, double **la, double **nu, 
 
 
 
-void modelA1(int p, int T, int n, int K, double ***Y, double **la, double **nu, double *tau, double ***Mu, double **gamma, double ***invS, double ***invPsi, double *detPsi){
+void modelA1(int p, int T, int n, int K, double ***Y, double **la, double **nu, double *tau, double ***Mu, double **gamma, double ***invS, double ***invPsi, double *detPsi, int trans_type){
   
 	int i, k, t1, t2;
 	double det = 1.0;
@@ -407,7 +407,7 @@ void modelA1(int p, int T, int n, int K, double ***Y, double **la, double **nu, 
 
 	for(k=0; k<K; k++){
 
-		Trans_trans_whole(n, p, T, la[k], nu[k], Y, MY);
+		Trans_trans_whole(n, p, T, la[k], nu[k], Y, MY, trans_type);
 
 		for(i=0; i<n; i++){
 
@@ -471,7 +471,7 @@ void modelA1(int p, int T, int n, int K, double ***Y, double **la, double **nu, 
 }
 
 
-void modelA2(int p, int T, int n, int K, double ***Y, double **la, double **nu, double *tau, double ***Mu, double **gamma, double ***invS, double ***invPsi, double *detPsi){
+void modelA2(int p, int T, int n, int K, double ***Y, double **la, double **nu, double *tau, double ***Mu, double **gamma, double ***invS, double ***invPsi, double *detPsi, int trans_type){
   
 	int i, k, t1, t2;
 	double det;
@@ -497,7 +497,7 @@ void modelA2(int p, int T, int n, int K, double ***Y, double **la, double **nu, 
 		Anull(WC, T, T);
 		cpyk(invS, p, p, k, invSk);
 		cpyk(Mu, p, T, k, Muk);
-		Trans_trans_whole(n, p, T, la[k], nu[k], Y, MY);
+		Trans_trans_whole(n, p, T, la[k], nu[k], Y, MY, trans_type);
 
 
 		for(i=0; i<n; i++){
@@ -557,7 +557,7 @@ void modelA2(int p, int T, int n, int K, double ***Y, double **la, double **nu, 
 
 
 
-void modelA3(int p, int T, int n, int K, double ***Y, double **la, double **nu, double *tau, double ***Mu, double **gamma, double ***invS, double ***invPsi, double *detPsi){
+void modelA3(int p, int T, int n, int K, double ***Y, double **la, double **nu, double *tau, double ***Mu, double **gamma, double ***invS, double ***invPsi, double *detPsi, int trans_type){
   
 	int i, k, t1, t2;
 	double det, min;
@@ -583,7 +583,7 @@ void modelA3(int p, int T, int n, int K, double ***Y, double **la, double **nu, 
 
 	for(k=0; k<K; k++){
 
-		Trans_trans_whole(n, p, T, la[k], nu[k], Y, MY);
+		Trans_trans_whole(n, p, T, la[k], nu[k], Y, MY, trans_type);
 		cpyk(Mu, p, T, k, Muk);
 		cpyk(invS, p, p, k, invSk);
 
@@ -685,7 +685,7 @@ void modelA3(int p, int T, int n, int K, double ***Y, double **la, double **nu, 
 
 
 
-void modelA5(int p, int T, int n, int K, double ***Y, double **la, double **nu, double *tau, double ***Mu, double **gamma, double ***invS, double ***invPsi, double *detPsi){
+void modelA5(int p, int T, int n, int K, double ***Y, double **la, double **nu, double *tau, double ***Mu, double **gamma, double ***invS, double ***invPsi, double *detPsi, int trans_type){
   
 	int i, k, t1, t2;
 	double det = 1.0, det2;
@@ -719,7 +719,7 @@ void modelA5(int p, int T, int n, int K, double ***Y, double **la, double **nu, 
 		Anull(WC, T, T);
 		cpyk(invS, p, p, k, invSk);
 		cpyk(Mu, p, T, k, Muk);
-		Trans_trans_whole(n, p, T, la[k], nu[k], Y, MY);	
+		Trans_trans_whole(n, p, T, la[k], nu[k], Y, MY, trans_type);	
 
 		for(i=0; i<n; i++){
 
@@ -824,7 +824,7 @@ void modelA5(int p, int T, int n, int K, double ***Y, double **la, double **nu, 
 
 
 
-void modelA6(int p, int T, int n, int K, double ***Y, double **la, double **nu, double *tau, double ***Mu, double **gamma, double ***invS, double ***invPsi, double *detPsi){
+void modelA6(int p, int T, int n, int K, double ***Y, double **la, double **nu, double *tau, double ***Mu, double **gamma, double ***invS, double ***invPsi, double *detPsi, int trans_type){
   
   
 	int k, i, t1, t2, t;
@@ -853,7 +853,7 @@ void modelA6(int p, int T, int n, int K, double ***Y, double **la, double **nu, 
 
 	
 		cpyk(Mu, p, T, k, Muk);
-		Trans_trans_whole(n, p, T, la[k], nu[k], Y, MY);	
+		Trans_trans_whole(n, p, T, la[k], nu[k], Y, MY, trans_type);	
 
 
 		for(i=0; i<n; i++){

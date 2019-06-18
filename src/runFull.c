@@ -6,7 +6,7 @@ void run_Mat_Trans_Full(double *y, int *misc_int, double *misc_double, double *t
 		
 	double ***Y, **la, **nu, ***Mu, ***invS, ***invPsi, **gamma;
 
-	int p, n, T, K, max_iter, Mu_type, Sigma_type, Psi_type, la_type;
+	int p, n, T, K, max_iter, Mu_type, Sigma_type, Psi_type, la_type, trans_type;
 
 
 	p = misc_int[0];
@@ -18,7 +18,7 @@ void run_Mat_Trans_Full(double *y, int *misc_int, double *misc_double, double *t
 	Sigma_type = misc_int[6];	
 	Psi_type = misc_int[7];	
 	la_type = misc_int[8];	
-
+	trans_type = misc_int[9];	
 
 	MAKE_3ARRAY(Y, p, T, n);
 	MAKE_3ARRAY(Mu, p, T, K);
@@ -36,7 +36,9 @@ void run_Mat_Trans_Full(double *y, int *misc_int, double *misc_double, double *t
 	array1to2(K, p, la1, la);
 	array1to2(K, T, nu1, nu);
 
-	EM_Trans_Full(p, T, n, K, Y, la, nu, max_iter, misc_double, tau, Mu, invS, invPsi, detS, detPsi, gamma, id, ll, conv, Mu_type, Sigma_type, Psi_type, la_type, scale);
+	//printf(" trans_type %d \n", trans_type);
+
+	EM_Trans_Full(p, T, n, K, Y, la, nu, max_iter, misc_double, tau, Mu, invS, invPsi, detS, detPsi, gamma, id, ll, conv, Mu_type, Sigma_type, Psi_type, la_type, scale, trans_type);
 
 
 	array3to1(p, T, n, y, Y);

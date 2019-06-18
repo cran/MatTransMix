@@ -1,2 +1,3 @@
-EMalgorithm		MatTransMix	EM algorithm
+EMalgorithm1		MatTransMix	EM algorithm example 1
+EMalgorithm2		MatTransMix	EM algorithm example 2
 IMDb			MatTransMix	IMDb dataset
