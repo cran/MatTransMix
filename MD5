@@ -1,7 +1,7 @@
-8e6f378d9e6e38a25a47746f15f566fe *DESCRIPTION
+cb4eea02c67f1684b1b5104dc8c2bb65 *DESCRIPTION
 56390942c66155f6641952039fc37788 *NAMESPACE
-dad22ad338a753e7fad1495a445efa05 *NEWS
-310024aafdedede34e202a20db84e314 *R/libMatTransFull.R
+53882ee703ee488e03d9c9a94759e6a2 *NEWS
+42da37d78a601bb3e94a4af281c20720 *R/libMatTransFull.R
 4fd9535927e22d1e3b2deee49cfb928e *data/IMDb.RData
 90afe60a89c183fb4ce06068f915a55d *data/crime.RData
 9d6e1edb8cfa99d04e1ede856ac5cd66 *demo/00Index
@@ -24,7 +24,7 @@ f545086f8f32155656ccc08f80c60957 *src/crosen1.c
 a34982fa892b7f7a258d1d3a39aa0bb9 *src/libCEigen.c
 727c2250fe750a8b9bdf4868731a4954 *src/libEVD.c
 5ca3b814c29983e9203bef5543470261 *src/libEVD_LAPACK.c
-ad3314d2c92b63ccb817df19eec63c16 *src/libFull.c
+4f9bebf62f4a3c83b6d773c2ad4b9397 *src/libFull.c
 0b49f240bf578eb33eef5d0f749b4882 *src/libMatrix.c
 033c73174b47fe1c530163a7579a68dc *src/libPsi.c
 ae4c91f34adbbe122a9b47f8e135fc62 *src/libRandC.c

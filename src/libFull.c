@@ -1717,9 +1717,12 @@ void EM_Trans_Full(int p, int T, int n, int K, double ***Y, double **la, double 
 	else if(Psi_type == 6){M += K*T*(T+1)/2-K;}
 	
 
-	if(la[0][0] != 1.0){M += K*p+K*(T-1);}
+	if(trans_type != 0){
+		if(la_type == 1){M += K+K*(T-1);}
+		else if(la_type == 0){M += K*p+K*(T-1);}
 
-
+	}
+	
 	ll[1] = log(n)*M -2.0*ll[0];
 
 

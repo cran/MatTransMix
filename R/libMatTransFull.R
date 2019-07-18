@@ -358,7 +358,7 @@ MatTrans.EM <- function(Y, initial = NULL, id = NULL, la = NULL, nu = NULL, tau 
 		best.bic <- bic[find.min]
 
 
-		ret <- list(result = result, model = model, loglik = loglik, bic = bic, best.result = best.result, best.model = best.model, best.loglik = best.loglik, best.bic = best.bic)
+		ret <- list(result = result, model = model, loglik = loglik, bic = bic, best.result = best.result, best.model = best.model, best.loglik = best.loglik, best.bic = best.bic, pars = r$pars)
 
 	
 		class(ret) <- "MatTransMix"
