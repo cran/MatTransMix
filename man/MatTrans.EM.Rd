@@ -7,7 +7,7 @@ Runs the EM algorithm for matrix clustering}
 \usage{
 MatTrans.EM(Y, initial = NULL, id = NULL, la = NULL, 
 nu = NULL, tau = NULL, Mu = NULL, Sigma = NULL, Psi = NULL, 
-model = NULL, trans = "Power", la.type = 0, tol = 1e-05, 
+model = NULL, trans = "Gaussian", la.type = 0, tol = 1e-05, 
 max.iter = 1000, size.control = 0, silent = TRUE)
 }
 % maybe also 'usage' for other objects documented here.
@@ -22,7 +22,7 @@ max.iter = 1000, size.control = 0, silent = TRUE)
   \item{Sigma }{ initial array of sigma (p x p x K)}
   \item{Psi }{ initial array of psi (T x T x K)}
   \item{model }{ parsimonious model type, if null, then all 98 models are run}
-  \item{trans }{ transformation method}
+  \item{trans }{ transformation method: Gaussian, Power, Manly}
   \item{la.type }{ lambda type}
   \item{tol }{ tolerance level}
   \item{max.iter }{ maximum number of iterations}
@@ -60,8 +60,7 @@ n <- dim(Y)[3]
 K <-  2
 
 init <- MatTrans.init(Y, K = K, n.start = 3)
-Gauss <- MatTrans.EM(Y, initial = init, la = matrix(1, K, p), 
-nu = matrix(1, K, T), max.iter = 1000, model = "G-EII-UI")
+Gauss <- MatTrans.EM(Y, initial = init, max.iter = 1000, model = "G-EII-UI")
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

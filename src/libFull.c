@@ -107,7 +107,7 @@ void Trans_trans(int p, int T, double *la, double *nu, double **Y, double **MY, 
   		}
  	}
 
-	else{
+	else if(trans_type == 2){
  
 		for (j=0; j<p; j++){
 			if (fabs(la[j] + nu[t])<1e-12){
@@ -122,6 +122,15 @@ void Trans_trans(int p, int T, double *la, double *nu, double **Y, double **MY, 
       
   		}
 
+	}
+
+	else if(trans_type == 0){
+ 
+		for (j=0; j<p; j++){
+			for(t=0; t<T; t++) {
+				MY[j][t] = Y[j][t];
+      			}
+   		}
 	}
 
 }
@@ -158,7 +167,7 @@ void Trans_trans_whole(int n, int p, int T, double *la, double *nu, double ***Y,
   			}
  		}
  	}
- 	else{
+ 	else if(trans_type == 2){
  		for(i=0; i<n; i++){
 
   			for (j=0; j<p; j++){
@@ -177,13 +186,26 @@ void Trans_trans_whole(int n, int p, int T, double *la, double *nu, double ***Y,
  		}
 
  	}
+ 	else if(trans_type == 0){
+ 		for(i=0; i<n; i++){
+
+  			for (j=0; j<p; j++){
+    				
+      				for(t=0; t<T; t++) {
+					MY[j][t][i] = Y[j][t][i];
+      				}
+    			}
+ 		}
+
+ 	}
+
   
 }
 
 double mGpdf_Trans_Full(int p, int T, double *la, double *nu, double **Y, double **Mu, double **invS, double **invPsi, double detS, double detPsi, int trans_type){
 
 	int j, t;
-	double trace = 0.0, dens, jac;
+	double trace = 0.0, dens, jac = 0.0;
 	double **MY, **tMY, **temp1, **temp2, **maha;
 
 	MAKE_MATRIX(maha, p, p);
@@ -230,7 +252,7 @@ double mGpdf_Trans_Full(int p, int T, double *la, double *nu, double **Y, double
 			}	
 		}
 	}
-	else{
+	else if(trans_type == 2){
 		jac = 0.0;
 
 		for(j=0; j<p; j++){
@@ -244,6 +266,11 @@ double mGpdf_Trans_Full(int p, int T, double *la, double *nu, double **Y, double
 		jac = exp(jac); 
 
 	}
+
+	else if(trans_type == 0){
+		jac = 1.0;
+	}
+
 
 	dens = dens * jac;
 
@@ -413,9 +440,9 @@ void Estep_Trans_Full(int p, int T, int n, int K, double ***Y, double **la, doub
 
 
 // Q-function
-double Q1(int n, int p, int T, double *la_nonzero, double *nu, int *index, double ***Y, double *gamma_k, double **invSk, double **invPsik, int Mu_type, int trans_type){
+double Q1(int n, int p, int T, double *la_nonzero, double *nu, double ***Y, double *gamma_k, double **invSk, double **invPsik, int Mu_type, int trans_type, int la_type){
   
-	int i, j, t, count;
+	int i, j, t;
 	double res, jac, sum_gamma, det;
 	double *la;
 	double **Sk, **temp1, **temp2, **temp3;
@@ -496,21 +523,13 @@ double Q1(int n, int p, int T, double *la_nonzero, double *nu, int *index, doubl
 
 
 
-	count = 0;
-
-
-
 	cpy(invPsik, T, T, invPsik0);
 
-	for(j=0; j<p; j++){
-		if(index[j]==1){
-			la[j] = la_nonzero[count];
-			count += 1;
-		}
-		else{
-			la[j] = 1; 
 
-		}
+
+	for(j=0; j<p; j++){
+
+		la[j] = la_nonzero[j];
 	}	
 
 
@@ -635,7 +654,7 @@ double Q1(int n, int p, int T, double *la_nonzero, double *nu, int *index, doubl
 			res = res + gamma_k[i] * jac;
 		}
 	}
-	else{
+	else if(trans_type == 2){
 		for(i=0; i<n; i++){
 
 			jac = 0;
@@ -687,9 +706,9 @@ double Q1(int n, int p, int T, double *la_nonzero, double *nu, int *index, doubl
 
 
 // Q-function
-double Q1_same(int n, int p, int T, double *la_nonzero, double *nu, int *index, double ***Y, double *gamma_k, double **invSk, double **invPsik, int Mu_type, int trans_type){
+double Q1_same(int n, int p, int T, double *la_nonzero, double *nu, double ***Y, double *gamma_k, double **invSk, double **invPsik, int Mu_type, int trans_type, int la_type){
   
-	int i, j, t, count;
+	int i, j, t;
 	double res, jac, sum_gamma, det;
 	double *la;
 	double **Sk, **temp1, **temp2, **temp3;
@@ -767,10 +786,6 @@ double Q1_same(int n, int p, int T, double *la_nonzero, double *nu, int *index, 
 	}
 	
 	XAXt(matconst, p+T-1, L, invconst);
-
-
-
-	count = 0;
 
 
 
@@ -903,7 +918,7 @@ double Q1_same(int n, int p, int T, double *la_nonzero, double *nu, int *index, 
 			res = res + gamma_k[i] * jac;
 		}
 	}
-	else{
+	else if(trans_type == 2){
 		for(i=0; i<n; i++){
 
 			jac = 0;
@@ -952,9 +967,9 @@ double Q1_same(int n, int p, int T, double *la_nonzero, double *nu, int *index, 
 
 
 // Q-function
-double Q2(int n, int p, int T, double *nu_nonzero, double *la, int *index, double ***Y, double *gamma_k, double **invSk, double **invPsik, int Mu_type, int trans_type){
+double Q2(int n, int p, int T, double *nu_nonzero, double *la, double ***Y, double *gamma_k, double **invSk, double **invPsik, int Mu_type, int trans_type){
   
-	int i, j, t, count;
+	int i, j, t;
 	double res, jac, sum_gamma, det;
 	double *nu;
 	double **Sk, **temp1, **temp2, **temp3;
@@ -1035,21 +1050,11 @@ double Q2(int n, int p, int T, double *nu_nonzero, double *la, int *index, doubl
 	XAXt(matconst, p+T-1, L, invconst);
 
 
-
-	count = 0;
-
-
 	cpy(invPsik, T, T, invPsik0);
 
 	for(t=0; t<T; t++){
-		if(index[t]==1){
-			nu[t] = nu_nonzero[count];
-			count += 1;
-		}
-		else{
-			nu[t] = 1.0; 
 
-		}
+		nu[t] = nu_nonzero[t];
 	}	
 
 
@@ -1180,7 +1185,7 @@ double Q2(int n, int p, int T, double *nu_nonzero, double *la, int *index, doubl
 			res = res + gamma_k[i] * jac;
 		}
 	}
-	else{
+	else if(trans_type == 2){
 		for(i=0; i<n; i++){
 
 			jac = 0;
@@ -1231,7 +1236,7 @@ double Q2(int n, int p, int T, double *nu_nonzero, double *la, int *index, doubl
 
 double Mstep_Trans_Full(int p, int T, int n, int K, double *misc_double, double ***Y, double **la, double **nu, double **gamma, double ***invS, double ***Mu, double ***invPsi, double *detS, double *detPsi, double *tau, int Mu_type, int Sigma_type, int Psi_type, int la_type, int trans_type){
 
-	int i,j,k,t,sum_index1, count, *index1, sum_index2, *index2;
+	int i,j,k,t;
 	double *Q_value, Q_value0, min_value, eps, det, *sum_gamma, *gamma_k, **Psi, **S, **temp1, **temp2, **temp3, **temp4, **invPsik, *Eig, **L;
 	double **Muk, **invSk, **matconst, **invconst, **MYi, **tMYi, ***MY;
 	double *Eig1, *Eig2;
@@ -1251,8 +1256,6 @@ double Mstep_Trans_Full(int p, int T, int n, int K, double *misc_double, double 
 	MAKE_VECTOR(gamma_k, n);
 	MAKE_VECTOR(Eig1, T);
 	MAKE_VECTOR(Eig2, p);
-	MAKE_VECTOR(index1, p);
-	MAKE_VECTOR(index2, T);
 	MAKE_MATRIX(Psi, T, T);
 	MAKE_MATRIX(S, p, p);
 	MAKE_MATRIX(tMYi, T, p);
@@ -1501,66 +1504,28 @@ double Mstep_Trans_Full(int p, int T, int n, int K, double *misc_double, double 
 		Q_value0 = 0;
 		//optimize with respect to la;	
 		for(k=0; k<K; k++){
-			sum_index1 = 0;
-	
+
 			cpyv(gamma, k, n, gamma_k);		
 			cpyk(invS, p, p, k, invSk);		
 			cpyk(invPsi, T, T, k, invPsik);		
 
 
-			for(j=0; j<p; j++){
-				index1[j] = (la[k][j] != 1.0);
-				sum_index1 += index1[j];
-			}
-
-
-			if(sum_index1 > 0){
-
-				double *la_nonzero;
-
-				MAKE_VECTOR(la_nonzero, sum_index1);
-				count = 0;
-				for(j=0; j<p; j++){
-					if(index1[j] == 1){
-						la_nonzero[count] = la[k][j];
-						count += 1;
-					}
-				}
+			if(trans_type != 0){
 			
 
-				min_value = simplex1(Q1, n, p, T, nu[k], index1, Y, gamma_k, invSk, invPsik, la_nonzero, eps, 0.1, Mu_type, trans_type);
+				min_value = simplex1(Q1, n, p, T, nu[k], Y, gamma_k, invSk, invPsik, la[k], eps, 0.1, Mu_type, trans_type, la_type);
 
-				count = 0;
-				for(j=0; j<p; j++){
-					if(index1[j] == 1){
-						la[k][j] = la_nonzero[count];
-						count += 1;
-					}	
-				
-					else{
-						la[k][j] = 1.0;
-					}
-				}			
-			
-				FREE_VECTOR(la_nonzero);
 				Q_value[k] = min_value;
 		
 			} 
 
 
 			else {
-				double *la_nonzero;
+	
 
-				MAKE_VECTOR(la_nonzero, p);
-
-				for(j=0; j<p; j++){
-					la_nonzero[j] = 1.0;		
-				}			
-
-				Q_value[k] = Q1(n, p, T, la_nonzero, nu[k], index1, Y, gamma_k, invSk, invPsik, Mu_type, trans_type);
+				Q_value[k] = Q1(n, p, T, la[k], nu[k], Y, gamma_k, invSk, invPsik, Mu_type, trans_type, la_type);
 
 
-				FREE_VECTOR(la_nonzero);
 			}
 
 			Q_value0 += Q_value[k];
@@ -1575,36 +1540,23 @@ double Mstep_Trans_Full(int p, int T, int n, int K, double *misc_double, double 
 
 		//optimize with respect to la;	
 		for(k=0; k<K; k++){
-			sum_index1 = 0;
-	
-			for(j=0; j<p; j++){
-				index1[j] = (la[k][j] != 1.0);
-				sum_index1 += index1[j];
-			}
-
+				
 
 			cpyv(gamma, k, n, gamma_k);		
 			cpyk(invS, p, p, k, invSk);		
 			cpyk(invPsi, T, T, k, invPsik);		
 
 
-			if(sum_index1 > 0){
-				
-				anulli(index1, p);
+			if(trans_type != 0){
 
-				index1[0] = 1;
 
 				double *la_nonzero;
-
-				count = 0;
-				
 				MAKE_VECTOR(la_nonzero, 1);
 
 				la_nonzero[0] = la[k][0];
 
-				min_value = simplex1(Q1_same, n, p, T, nu[k], index1, Y, gamma_k, invSk, invPsik, la_nonzero, eps, 0.1, Mu_type, trans_type);
+				min_value = simplex1(Q1_same, n, p, T, nu[k], Y, gamma_k, invSk, invPsik, la_nonzero, eps, 0.1, Mu_type, trans_type, la_type);
 				//printf(" Q  %lf\n", la_nonzero[0]);
-
 
 				for(j=0; j<p; j++){
 
@@ -1613,24 +1565,16 @@ double Mstep_Trans_Full(int p, int T, int n, int K, double *misc_double, double 
 				}		
 	
 				FREE_VECTOR(la_nonzero);
+
 				Q_value[k] = min_value;
 		
 			} 
 
 
 			else {
-				double *la_nonzero;
 
-				MAKE_VECTOR(la_nonzero, p);
+				Q_value[k] = Q1(n, p, T, la[k], nu[k], Y, gamma_k, invSk, invPsik, Mu_type, trans_type, la_type);
 
-				for(j=0; j<p; j++){
-					la_nonzero[j] = 1.0;		
-				}			
-
-				Q_value[k] = Q1(n, p, T, la_nonzero, nu[k], index1, Y, gamma_k, invSk, invPsik, Mu_type, trans_type);
-
-
-				FREE_VECTOR(la_nonzero);
 			}
 
 			Q_value0 += Q_value[k];
@@ -1644,71 +1588,24 @@ double Mstep_Trans_Full(int p, int T, int n, int K, double *misc_double, double 
 	Q_value0 = 0;
 	
 	for(k=0; k<K; k++){
-		sum_index2 = 0;
-	
+			
 		cpyv(gamma, k, n, gamma_k);		
 
 
-		for(t=0; t<T; t++){
-			index2[t] = (nu[k][t] != 1.0);
-			sum_index2 += index2[t];
-		}
+		if(trans_type != 0){
 
 
+			min_value = simplex2(Q2, n, p, T, la[k], Y, gamma_k, invSk, invPsik, nu[k], eps, 0.1, Mu_type, trans_type);
 
-
-		if(sum_index2 > 0){
-
-			double *nu_nonzero;
-
-			MAKE_VECTOR(nu_nonzero, sum_index2);
-			count = 0;
-			for(t=0; t<T; t++){
-				if(index2[t] == 1){
-					nu_nonzero[count] = nu[k][t];
-					count += 1;
-				}
-			}
-			
-
-
-			min_value = simplex2(Q2, n, p, T, la[k], index2, Y, gamma_k, invSk, invPsik, nu_nonzero, eps, 0.1, Mu_type, trans_type);
-
-
-
-			count = 0;
-			for(t=0; t<T; t++){
-				if(index2[t] == 1){
-					nu[k][t] = nu_nonzero[count];
-					count += 1;
-				}	
-				
-				else{
-					nu[k][t] = 1.0;
-				}
-			}			
-			
-			FREE_VECTOR(nu_nonzero);
 			Q_value[k] = min_value;
 		
 		} 
 
 
 		else {
-			double *nu_nonzero;
 
-			MAKE_VECTOR(nu_nonzero, T);
+			Q_value[k] = Q2(n, p, T, nu[k], la[k], Y, gamma_k, invSk, invPsik, Mu_type, trans_type);
 
-
-			for(t=0; t<T; t++){
-				nu_nonzero[t] = 1.0;		
-			}			
-
-
-			Q_value[k] = Q2(n, p, T, nu_nonzero, la[k], index2, Y, gamma_k, invSk, invPsik, Mu_type, trans_type);
-
-
-			FREE_VECTOR(nu_nonzero);
 		}
 
 		Q_value0 += Q_value[k];
@@ -1734,8 +1631,6 @@ double Mstep_Trans_Full(int p, int T, int n, int K, double *misc_double, double 
 	FREE_VECTOR(sum_gamma);
 	FREE_VECTOR(gamma_k);
 	FREE_VECTOR(Eig1);
-	FREE_VECTOR(index1);
-	FREE_VECTOR(index2);
 	FREE_VECTOR(Eig2);
 	FREE_MATRIX(Psi);	
 	FREE_MATRIX(S);
@@ -1766,7 +1661,7 @@ void EM_Trans_Full(int p, int T, int n, int K, double ***Y, double **la, double 
 	//printf(" trans_type  %d\n", trans_type);
 	do{
 		//if(loglik_old <loglik){
-		//	printf(" ll  %lf\n", loglik_old);
+			//printf(" ll  %lf\n", loglik_old);
 		//}
 		loglik = loglik_old; 
 		
@@ -1790,8 +1685,9 @@ void EM_Trans_Full(int p, int T, int n, int K, double ***Y, double **la, double 
 
 
 
-	ll[0] = mGloglik_Trans_Full(p, T, n, K, Y, la, nu, tau, Mu, invS, invPsi, detS, detPsi, scale, trans_type);
+	ll[0] = mGloglik_Trans_Full(p, T, n, K, Y, la, nu, tau, Mu, invS, invPsi, detS, detPsi, 1.0, trans_type);
 
+	//printf(" ll  %lf\n", ll[0]);
 
 	M += K-1;
 

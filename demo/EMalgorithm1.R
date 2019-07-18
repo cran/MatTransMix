@@ -13,13 +13,13 @@ K <- 2
 
 #Run the EM algorithm with parsimonious models
 
-initial <- MatTrans.init(X, K, n.start = 2, scale = 1)
+initial <- MatTrans.init(X, K, n.start = 1, scale = 1)
 
 Manly <- MatTrans.EM(X, initial = initial, la.type = 0, trans = "Manly", la = matrix(0.9, K, p), nu = matrix(0.9, K, T), silent = FALSE)
 
-Power <- MatTrans.EM(X, initial = initial, la.type = 0, la = matrix(0.9, K, p), nu = matrix(0.9, K, T), silent = FALSE)
+Power <- MatTrans.EM(X, initial = initial, la.type = 0, trans = "Power", la = matrix(0.9, K, p), nu = matrix(0.9, K, T), silent = FALSE)
 
-Gauss <- MatTrans.EM(X, initial = initial, la.type = 0, la = matrix(1, K, p), nu = matrix(1, K, T), silent = FALSE)
+Gauss <- MatTrans.EM(X, initial = initial, la.type = 0, trans = "Gaussian", silent = FALSE)
 
 print(Manly$best.model)
 print(Manly$best.bic)

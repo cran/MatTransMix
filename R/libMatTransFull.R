@@ -189,7 +189,7 @@ code.back <- function(num){
 
 
 
-MatTrans.EM <- function(Y, initial = NULL, id = NULL, la = NULL, nu = NULL, tau = NULL, Mu = NULL, Sigma = NULL, Psi = NULL, model = NULL, trans = "Power", la.type = 0, tol = 1e-05, max.iter = 1000, size.control = 0, silent = TRUE){
+MatTrans.EM <- function(Y, initial = NULL, id = NULL, la = NULL, nu = NULL, tau = NULL, Mu = NULL, Sigma = NULL, Psi = NULL, model = NULL, trans = "Gaussian", la.type = 0, tol = 1e-05, max.iter = 1000, size.control = 0, silent = TRUE){
 
 	A <- dim(Y)
 	p <- A[1]
@@ -200,10 +200,10 @@ MatTrans.EM <- function(Y, initial = NULL, id = NULL, la = NULL, nu = NULL, tau 
 	if(p < 1) stop("Wrong dimensionality p...\n")
 	if(T < 1) stop("Wrong dimensionality T...\n")
 	if(is.null(la)){
-		la <- matrix(0.0, K, p)
+		la <- matrix(0.5, K, p)
 	}
 	if(is.null(nu)){
-		nu <- matrix(0.0, K, T)
+		nu <- matrix(0.5, K, T)
 	}
 
 	if(!is.null(initial)){
@@ -244,6 +244,23 @@ MatTrans.EM <- function(Y, initial = NULL, id = NULL, la = NULL, nu = NULL, tau 
 		loglik <- rep(-Inf, length(model))
 		bic <- rep(Inf, length(model)) 
 		result <- list()
+				
+		if(trans == "Power"){
+			trans.type <- 1
+			cat("Power transformation \n")
+		}
+		else if(trans == "Manly"){
+
+			trans.type <- 2
+			cat("Manly transformation \n")
+
+		}
+		else if(trans == "Gaussian"){
+			trans.type <- 0
+			cat("Gaussian -- no transformation \n")
+
+		}
+
 
 
 		for(i in 1:length(initial)){
@@ -260,13 +277,27 @@ MatTrans.EM <- function(Y, initial = NULL, id = NULL, la = NULL, nu = NULL, tau 
 			for(iter in 1:dim(index)[2]){
 
 				
-				if(trans == "Power"){trans.type <- 1}
-				else if(trans == "Manly"){trans.type <- 2}
+				if(trans == "Power"){
+					trans.type <- 1
+					
+				}
+				else if(trans == "Manly"){
+
+					trans.type <- 2
+					
+
+				}
+				else if(trans == "Gaussian"){
+					trans.type <- 0
+					
+				}
+
 				#cat("trans.type", trans.type, "\n")
 				misc_int <- c(p, T, n, K, max.iter, index[1,iter], index[2,iter], index[3,iter], la.type, trans.type)
 
 				try0 <- try(temp <- .C("run_Mat_Trans_Full", y = as.double(initial[[i]]$y), misc_int = as.integer(misc_int), misc_double = as.double(misc_double), tau = as.double(initial[[i]]$tau), la1 = as.double(as.vector(la)), nu1 = as.double(as.vector(nu)), Mu1 = as.double(initial[[i]]$Mu1), invS1 = as.double(initial[[i]]$invS1), invPsi1 = as.double(initial[[i]]$invPsi1), detS = as.double(initial[[i]]$detS), detPsi = as.double(initial[[i]]$detPsi), gamma1 = as.double(initial[[i]]$gamma1), id = as.integer(id), ll = as.double(ll), conv = as.integer(conv), scale = as.double(initial[[i]]$scale), PACKAGE = "MatTransMix"), silent = TRUE)
 
+				#cat("loglike", temp$ll, "\n") 
 
 				try1 <- try(invS <- array(temp$invS1, dim = c(p, p, K)))
 				try2 <- try(invPsi <- array(temp$invPsi1, dim = c(T, T, K)))
@@ -289,8 +320,14 @@ MatTrans.EM <- function(Y, initial = NULL, id = NULL, la = NULL, nu = NULL, tau 
 							r <- NULL
 						
 							r$tau <- temp$tau
-							r$la <- matrix(temp$la1, nrow = K)
-							r$nu <- matrix(temp$nu1, nrow = K)
+							if(trans.type != 0){
+								r$la <- matrix(temp$la1, nrow = K)
+								r$nu <- matrix(temp$nu1, nrow = K)
+							}
+							else{
+								r$la <- NA
+								r$nu <- NA
+							}
 							r$Sigma <- Sigma
 							r$Psi <- Psi
 							r$detS <- temp$detS

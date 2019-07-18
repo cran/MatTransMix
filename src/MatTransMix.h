@@ -18,11 +18,13 @@ double mGpdf_Trans_Full(int p, int T, double *la, double *nu, double **Y, double
 double mGloglik_Trans_Full(int p, int T, int n, int K, double ***Y, double **la, double **nu, double *tau, double ***Mu, double ***invS, double ***invPsi, double *detS, double *detPsi, double scale, int trans_type);
 void Estep_Trans_Full(int p, int T, int n, int K, double ***Y, double **la, double **nu, double *tau, double ***Mu, double ***invS, double ***invPsi, double *detS, double *detPsi, double **gamma, int trans_type);
 
-double Q1(int n, int p, int T, double *la_nonzero, double *nu, int *index, double ***Y, double *gamma_k, double **invSk, double **invPsik, int Mu_type, int trans_type);
-double Q2(int n, int p, int T, double *nu_nonzero, double *la, int *index, double ***Y, double *gamma_k, double **invSk, double **invPsik, int Mu_type, int trans_type);
+double Q1_same(int n, int p, int T, double *la_nonzero, double *nu, double ***Y, double *gamma_k, double **invSk, double **invPsik, int Mu_type, int trans_type, int la_type);
+double Q1(int n, int p, int T, double *la_nonzero, double *nu, double ***Y, double *gamma_k, double **invSk, double **invPsik, int Mu_type, int trans_type, int la_type);
+double Q2(int n, int p, int T, double *nu_nonzero, double *la, double ***Y, double *gamma_k, double **invSk, double **invPsik, int Mu_type, int trans_type);
 
-double simplex1(double (*func)(int, int, int, double *, double *, int *, double ***, double *, double **, double **, int, int), int n1, int p, int T, double *nu, int *index, double ***X, double *gamma_k, double **invSk, double **invPsik, double *start, double EPSILON, double scale, int Mu_type, int trans_type);
-double simplex2(double (*func)(int, int, int, double *, double *, int *, double ***, double *, double **, double **, int, int), int n1, int p, int T, double *la, int *index, double ***X, double *gamma_k, double **invSk, double **invPsik, double *start, double EPSILON, double scale, int Mu_type, int trans_type);
+double simplex1(double (*func)(int, int, int, double *, double *, double ***, double *, double **, double **, int, int, int), int n1, int p, int T, double *nu, double ***X, double *gamma_k, double **invSk, double **invPsik, double *start, double EPSILON, double scale, int Mu_type, int trans_type, int la_type);
+
+double simplex2(double (*func)(int, int, int, double *, double *, double ***, double *, double **, double **, int, int), int n1, int p, int T, double *la, double ***X, double *gamma_k, double **invSk, double **invPsik, double *start, double EPSILON, double scale, int Mu_type, int trans_type);
 
 double Mstep_Trans_Full(int p, int T, int n, int K, double *misc_double, double ***Y, double **la, double **nu, double **gamma, double ***invS, double ***Mu, double ***invPsi, double *detS, double *detPsi, double *tau, int Mu_type, int Sigma_type, int Psi_type, int la_type, int trans_type);
 void EM_Trans_Full(int p, int T, int n, int K, double ***Y, double **la, double **nu, int max_iter, double *misc_double, double *tau, double ***Mu, double ***invS, double ***invPsi, double *detS, double *detPsi, double **gamma, int *id, double *ll, int *conv, int Mu_type, int Sigma_type, int Psi_type, int la_type, double scale, int trans_type);
