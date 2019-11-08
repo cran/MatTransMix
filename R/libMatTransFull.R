@@ -119,7 +119,8 @@ code.convert <- function(code){
   Psi <- substr(code,7,8)
   
   Mu.num <- ifelse(Mu == "A", 1,
-	   ifelse(Mu == "G", 2, 0))
+	   ifelse(Mu == "G", 2, 
+	   ifelse(Mu == "X", 0, -1)))
 
   Sigma.num <- ifelse(Sigma == "EII", 1,
                ifelse(Sigma == "VII", 2,
@@ -134,15 +135,17 @@ code.convert <- function(code){
                ifelse(Sigma == "EEV", 11,
                ifelse(Sigma == "VEV", 12,
                ifelse(Sigma == "EVV", 13,
-               ifelse(Sigma == "VVV", 14,0))))))))))))))
+               ifelse(Sigma == "VVV", 14,
+ 	       ifelse(Sigma == "XXX", 0, -1)))))))))))))))
   
-  Psi.num <- ifelse(Psi == "UI", 0,
-             ifelse(Psi == "EI", 1,
-             ifelse(Psi == "VI", 2,
-             ifelse(Psi == "EE", 3,
-             ifelse(Psi == "VE", 4,
-             ifelse(Psi == "EV", 5,
-             ifelse(Psi == "VV", 6, -1)))))))
+  Psi.num <- ifelse(Psi == "UI", 1,
+             ifelse(Psi == "EI", 2,
+             ifelse(Psi == "VI", 3,
+             ifelse(Psi == "EE", 4,
+             ifelse(Psi == "VE", 5,
+             ifelse(Psi == "EV", 6,
+             ifelse(Psi == "VV", 7, 
+	     ifelse(Psi == "XX", 0, -1))))))))
   
   list(Mu = Mu, Sigma = Sigma, Psi = Psi, Mu.num = Mu.num, Sigma.num = Sigma.num, Psi.num = Psi.num)
 }
@@ -174,13 +177,13 @@ code.back <- function(num){
            ifelse(Sigma.num == 13, "EVV", 
            ifelse(Sigma.num == 14, "VVV", NULL))))))))))))))
   
-  Psi <- ifelse(Psi.num == 0, "UI", 
-         ifelse(Psi.num == 1, "EI", 
-         ifelse(Psi.num == 2, "VI", 
-         ifelse(Psi.num == 3, "EE", 
-         ifelse(Psi.num == 4, "VE", 
-         ifelse(Psi.num == 5, "EV", 
-         ifelse(Psi.num == 6, "VV", NULL)))))))
+  Psi <- ifelse(Psi.num == 1, "UI", 
+         ifelse(Psi.num == 2, "EI", 
+         ifelse(Psi.num == 3, "VI", 
+         ifelse(Psi.num == 4, "EE", 
+         ifelse(Psi.num == 5, "VE", 
+         ifelse(Psi.num == 6, "EV", 
+         ifelse(Psi.num == 7, "VV", NULL)))))))
   
   list(Mu = Mu, Sigma = Sigma, Psi = Psi, Mu.num = Mu.num, Sigma.num = Sigma.num, Psi.num = Psi.num)
 }
@@ -189,60 +192,113 @@ code.back <- function(num){
 
 
 
-MatTrans.EM <- function(Y, initial = NULL, id = NULL, la = NULL, nu = NULL, tau = NULL, Mu = NULL, Sigma = NULL, Psi = NULL, model = NULL, trans = "Gaussian", la.type = 0, tol = 1e-05, max.iter = 1000, size.control = 0, silent = TRUE){
+MatTrans.EM <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NULL, trans = "Gaussian", la.type = 0, tol = 1e-05, max.iter = 1000, size.control = 0, silent = TRUE){
 
 	A <- dim(Y)
 	p <- A[1]
 	T <- A[2]
 	n <- A[3]
+	
 
 	if(n < 1) stop("Wrong number of observations n...\n")
 	if(p < 1) stop("Wrong dimensionality p...\n")
 	if(T < 1) stop("Wrong dimensionality T...\n")
-	if(is.null(la)){
-		la <- matrix(0.5, K, p)
-	}
-	if(is.null(nu)){
-		nu <- matrix(0.5, K, T)
-	}
 
 	if(!is.null(initial)){
 		
 		if(length(initial) < 1) stop("Wrong initialization...\n")
 
 		K <- length(initial[[1]]$tau)
+		if(is.null(la) && (trans != "Gaussian")){
+			la <- matrix(0.5, K, p)
+			cat("Initial lambda -- 0.5 \n")
+
+		}
+		if(is.null(nu) && (trans != "Gaussian")){
+			nu <- matrix(0.5, K, T)
+			cat("Initial nu -- 0.5 \n")
+		}
+
+		if((la.type == 0) && (trans != "Gaussian")){
+			cat("Unrestricted lambda type \n")
+		}
+		else if((la.type == 1) && (trans != "Gaussian")){
+			cat("Lambda same across all variables \n")
+		}
+
+
 
 		if(is.null(model)){
 			index <- matrix(NA, 3, 14*7*2)
-			model <- rep(NA, 14*7*2)
+			Model <- rep(NA, 14*7*2)
 			iter <- 0
 			for(Mu.type in 1:2){
 				for(Sigma.type in 1:14){
-					for(Psi.type in 0:6){
+					for(Psi.type in 1:7){
 																	iter <- iter + 1
-						model[iter] <- paste(code.back(c(Mu.type, Sigma.type, Psi.type))$Mu, "-", code.back(c(Mu.type, Sigma.type, Psi.type))$Sigma, "-", code.back(c(Mu.type, Sigma.type, Psi.type))$Psi, sep="")
-						
-
-						
+						Model[iter] <- paste(code.back(c(Mu.type, Sigma.type, Psi.type))$Mu, "-", code.back(c(Mu.type, Sigma.type, Psi.type))$Sigma, "-", code.back(c(Mu.type, Sigma.type, Psi.type))$Psi, sep="")
+								
 						index[,iter] <- c(Mu.type, Sigma.type, Psi.type)
 					}
 				}
 			}
 		}
+
 		else{
-			index <- matrix(NA, 3, length(model))
-			for(iter in 1:length(model)){
-				code1 <- code.convert(model[iter])$Mu.num
-				code2 <- code.convert(model[iter])$Sigma.num
-				code3<- code.convert(model[iter])$Psi.num
-				index[,iter] <- c(code1, code2, code3)
+			
+			index <- NULL
+			Model <- NULL
+			for(ij in 1:length(model)){
+				
+				code1 <- code.convert(model[ij])$Mu.num
+				code2 <- code.convert(model[ij])$Sigma.num
+				code3<- code.convert(model[ij])$Psi.num
+			
+				
+				index.temp <- c(code1, code2, code3)
+				
+				#cat(index.temp, "\n")
+
+ 				if(any(index.temp == -1)){
+					stop("model code is not identifiable...\n")
+				}
+				else if(any(index.temp == 0)){
+
+					if(code1 == 0){
+						code1 <- c(1,2)
+					}
+					if(code2 == 0){
+						code2 <- seq(1,14)
+					}
+					if(code3 == 0){
+						code3 <- seq(1,7)
+					}
+
+					
+					index.temp <- t(expand.grid(x = code1, y = code2, z = code3))
+					for(ij2 in 1:dim(index.temp)[2]){
+						Model <- c(Model, paste(code.back(index.temp[,ij2])$Mu, "-", code.back(index.temp[,ij2])$Sigma, "-", code.back(index.temp[,ij2])$Psi, sep=""))
+					}
+						
+
+				}
+				else{
+					Model <- c(Model, paste(code.back(index.temp)$Mu, "-", code.back(index.temp)$Sigma, "-", code.back(index.temp)$Psi, sep=""))
+				}
+
+				index <- cbind(index, index.temp)
+
+				#cat(index, "\n")
+
 			}
+
+			
 		}
 
 
 
-		loglik <- rep(-Inf, length(model))
-		bic <- rep(Inf, length(model)) 
+		loglik <- rep(-Inf, dim(index)[2])
+		bic <- rep(Inf, dim(index)[2]) 
 		result <- list()
 				
 		if(trans == "Power"){
@@ -273,6 +329,7 @@ MatTrans.EM <- function(Y, initial = NULL, id = NULL, la = NULL, nu = NULL, tau 
 			conv <- rep(0, 3)
 			id <- rep(0, n)
 
+			r <- NULL
 
 			for(iter in 1:dim(index)[2]){
 
@@ -297,7 +354,7 @@ MatTrans.EM <- function(Y, initial = NULL, id = NULL, la = NULL, nu = NULL, tau 
 
 				try0 <- try(temp <- .C("run_Mat_Trans_Full", y = as.double(initial[[i]]$y), misc_int = as.integer(misc_int), misc_double = as.double(misc_double), tau = as.double(initial[[i]]$tau), la1 = as.double(as.vector(la)), nu1 = as.double(as.vector(nu)), Mu1 = as.double(initial[[i]]$Mu1), invS1 = as.double(initial[[i]]$invS1), invPsi1 = as.double(initial[[i]]$invPsi1), detS = as.double(initial[[i]]$detS), detPsi = as.double(initial[[i]]$detPsi), gamma1 = as.double(initial[[i]]$gamma1), id = as.integer(id), ll = as.double(ll), conv = as.integer(conv), scale = as.double(initial[[i]]$scale), PACKAGE = "MatTransMix"), silent = TRUE)
 
-				#cat("loglike", temp$ll, "\n") 
+				 
 
 				try1 <- try(invS <- array(temp$invS1, dim = c(p, p, K)))
 				try2 <- try(invPsi <- array(temp$invPsi1, dim = c(T, T, K)))
@@ -306,15 +363,18 @@ MatTrans.EM <- function(Y, initial = NULL, id = NULL, la = NULL, nu = NULL, tau 
 				try4 <- try(Psi <- array(apply(invPsi, 3, solve), dim = c(T,T,K)))
 
 				if ((class(try0) != "try-error") && (class(try1) != "try-error") && (class(try2) != "try-error")){
-			
-					if(!is.na(temp$ll[1])){		
 
-						if ((temp$ll[1] > loglik[iter]) && (class(try3) != "try-error") && (class(try4) != "try-error") && all(table(temp$id) > size.control) && all(table(temp$id) < n-size.control)){
+			
+					if(!is.na(temp$ll[1])){	
+						
+						if ((temp$ll[1] > loglik[iter]) && (class(try3) != "try-error") && (class(try4) != "try-error") && all(table(temp$id) > size.control) && (length(table(temp$id))==K)){
+
+
 							loglik[iter] <- temp$ll[1]	
 							bic[iter] <- temp$ll[2]	
 
 							if(silent != TRUE){
-								cat("Model", model[iter], "BIC", bic[iter], "\n")
+								cat("Model", Model[iter], "BIC", bic[iter], "\n")
 							}
 											
 							r <- NULL
@@ -323,10 +383,20 @@ MatTrans.EM <- function(Y, initial = NULL, id = NULL, la = NULL, nu = NULL, tau 
 							if(trans.type != 0){
 								r$la <- matrix(temp$la1, nrow = K)
 								r$nu <- matrix(temp$nu1, nrow = K)
+								r$LA <- array(NA, dim = c(p, T, K))
+								for(k in 1:K){
+									for(j in 1:p){
+										for(t in 1:T){
+											r$LA[j,t,k] <- r$la[k,j] + r$nu[k,t]
+										}
+									}
+								}
 							}
 							else{
 								r$la <- NA
 								r$nu <- NA
+								r$LA <- NA
+
 							}
 							r$Sigma <- Sigma
 							r$Psi <- Psi
@@ -339,7 +409,11 @@ MatTrans.EM <- function(Y, initial = NULL, id = NULL, la = NULL, nu = NULL, tau 
 
 							r$id <- temp$id
 							r$flag <- temp$conv[2]
+							r$ll <- temp$ll[1]
+							r$bic <- temp$ll[2]
+							
 							result[[iter]] <- r
+							
 
 						}
 					}
@@ -351,15 +425,16 @@ MatTrans.EM <- function(Y, initial = NULL, id = NULL, la = NULL, nu = NULL, tau 
 
 		}				
 
+
 		find.min <- which.min(bic)
 		best.result <- result[find.min]
-		best.model <- model[find.min]
+		best.model <- Model[find.min]
 		best.loglik <- loglik[find.min]
 		best.bic <- bic[find.min]
 
 
-		ret <- list(result = result, model = model, loglik = loglik, bic = bic, best.result = best.result, best.model = best.model, best.loglik = best.loglik, best.bic = best.bic, pars = r$pars)
-
+		
+		ret <- list(result = result, model = Model, loglik = loglik, bic = bic, best.result = best.result, best.model = best.model, best.loglik = best.loglik, best.bic = best.bic, trans = trans)
 	
 		class(ret) <- "MatTransMix"
 	
@@ -367,7 +442,10 @@ MatTrans.EM <- function(Y, initial = NULL, id = NULL, la = NULL, nu = NULL, tau 
 		return(ret)
 
 	}
+	else{
+		stop("Use MatTrans.init() to get initialization...\n")
 
+	}
 
 
 }

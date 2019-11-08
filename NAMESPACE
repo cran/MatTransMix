@@ -2,4 +2,10 @@ useDynLib(MatTransMix, .registration = TRUE)
 importFrom("stats", "var")
 export(MatTrans.EM)
 export(MatTrans.init)
+export(print.EM)
+export(summary.EM)
 
+
+
+S3method(print, EM)
+S3method(summary, EM)

@@ -938,6 +938,13 @@ double Q1_same(int n, int p, int T, double *la_nonzero, double *nu, double ***Y,
 
 	}
 
+	for(j=0; j<p; j++){
+
+		la_nonzero[0] = la[0];
+	}	
+
+
+
 
 	FREE_VECTOR(la);
 	FREE_MATRIX(MYi);
@@ -1463,7 +1470,7 @@ double Mstep_Trans_Full(int p, int T, int n, int K, double *misc_double, double 
 	}
 
 
-	if(Psi_type == 0){
+	if(Psi_type == 1){
 		
 		Anull3(invPsi, T, T, K);
 		for(k=0; k<K; k++){
@@ -1476,19 +1483,19 @@ double Mstep_Trans_Full(int p, int T, int n, int K, double *misc_double, double 
 		}
 		
 	}
-	else if(Psi_type == 1){
+	else if(Psi_type == 2){
 		modelA1(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detPsi, trans_type);		
 	}
-	else if(Psi_type == 2){
+	else if(Psi_type == 3){
 		modelA2(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detPsi, trans_type);		
 	}
-	else if(Psi_type == 3){
+	else if(Psi_type == 4){
 		modelA3(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detPsi, trans_type);		
 	}
-	else if(Psi_type == 4){
+	else if(Psi_type == 5){
 		modelA4(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detPsi, trans_type);		
 	}
-	else if(Psi_type == 5){
+	else if(Psi_type == 6){
 		modelA5(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detPsi, trans_type);		
 	}
 	else{

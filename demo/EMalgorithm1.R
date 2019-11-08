@@ -21,12 +21,6 @@ Power <- MatTrans.EM(X, initial = initial, la.type = 0, trans = "Power", la = ma
 
 Gauss <- MatTrans.EM(X, initial = initial, la.type = 0, trans = "Gaussian", silent = FALSE)
 
-print(Manly$best.model)
-print(Manly$best.bic)
-
-print(Power$best.model)
-print(Power$best.bic)
-
-print(Gauss$best.model)
-print(Gauss$best.bic)
-
+print.EM(Manly)
+print.EM(Power)
+print.EM(Gauss)
