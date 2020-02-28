@@ -1,4 +1,3 @@
-// RegisteringDynamic Symbols
 
 #include <R.h>
 #include <Rinternals.h>

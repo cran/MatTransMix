@@ -7,10 +7,10 @@
 #define Inf 1e+140
 
 
-#ifdef __HAVE_R_
-	#include <R.h>
-	#include <Rmath.h>
-#endif
+
+#include <R.h>
+#include <Rmath.h>
+
 
 
 void modelB8(int p, int T, int n, int K, double ***Y, double **la, double **nu, double *tau, double ***Mu, double **gamma, double ***invS, double ***invPsi, double *detS, int trans_type){
@@ -82,11 +82,8 @@ void modelB8(int p, int T, int n, int K, double ***Y, double **la, double **nu, 
 
 
 	anull(Eig2, p);
-	#ifdef __HAVE_R_
-		EigValDec(p, Eig2, Delta, &det);
-	#else
-		cephes_symmeigens_down(p, Eig2, Delta, &det);
-	#endif
+
+	EigValDec(p, Eig2, Delta, &det);
 
 
 	min = INFINITY;
@@ -265,11 +262,8 @@ void modelB9(int p, int T, int n, int K, double ***Y, double **la, double **nu, 
 		cpyk(invS, p, p, k, invSk);
 
 
-		#ifdef __HAVE_R_
-			EigValDec(p, Eig1, invSk, &det1);
-		#else
-			cephes_symmeigens_down(p, Eig1, invSk, &det1);
-		#endif
+
+		EigValDec(p, Eig1, invSk, &det1);
 
 		Anull(L, p, p);
 
@@ -300,12 +294,8 @@ void modelB9(int p, int T, int n, int K, double ***Y, double **la, double **nu, 
 	}
 
 
-	#ifdef __HAVE_R_
-		EigValDec(p, Eig2, pooled, &det2);
-	#else
-		cephes_symmeigens_down(p, Eig2, pooled, &det2);
-	#endif
 
+	EigValDec(p, Eig2, pooled, &det2);
 
 	cpy(pooled, p, p, Gamma_max);
 
@@ -313,12 +303,8 @@ void modelB9(int p, int T, int n, int K, double ***Y, double **la, double **nu, 
 
 		cpyk(WR, p, p, k, WRk);
 
-		#ifdef __HAVE_R_
-			EigValDec(p, Eig, WRk, &det);
-		#else
-			cephes_symmeigens_down(p, Eig, WRk, &det);
-		#endif
 
+		EigValDec(p, Eig, WRk, &det);
 		wk[k] = Eig[p-1];	
 
 	}
@@ -361,7 +347,7 @@ void modelB9(int p, int T, int n, int K, double ***Y, double **la, double **nu, 
 		iter += 1;
 		fun = fun_new;
 
-		//construct Ft
+
 		Anull(Ft, p, p);
 		for(k=0; k<K; k++){	
 	
@@ -680,11 +666,7 @@ void modelB10(int p, int T, int n, int K, double ***Y, double **la, double **nu,
 		cpyk(invS, p, p, k, invSk);
 
 
-		#ifdef __HAVE_R_
-			EigValDec(p, Eig1, invSk, &det1);
-		#else
-			cephes_symmeigens_down(p, Eig1, invSk, &det1);
-		#endif
+		EigValDec(p, Eig1, invSk, &det1);
 
 		Anull(L, p, p);
 
@@ -715,11 +697,8 @@ void modelB10(int p, int T, int n, int K, double ***Y, double **la, double **nu,
 	}
 
 
-	#ifdef __HAVE_R_
-		EigValDec(p, Eig2, pooled, &det2);
-	#else
-		cephes_symmeigens_down(p, Eig2, pooled, &det2);
-	#endif
+
+	EigValDec(p, Eig2, pooled, &det2);
 
 
 	cpy(pooled, p, p, Gamma_max);
@@ -728,11 +707,8 @@ void modelB10(int p, int T, int n, int K, double ***Y, double **la, double **nu,
 
 		cpyk(WR, p, p, k, WRk);
 
-		#ifdef __HAVE_R_
-			EigValDec(p, Eig, WRk, &det);
-		#else
-			cephes_symmeigens_down(p, Eig, WRk, &det);
-		#endif
+
+		EigValDec(p, Eig, WRk, &det);
 
 		wk[k] = Eig[p-1];	
 
@@ -776,7 +752,6 @@ void modelB10(int p, int T, int n, int K, double ***Y, double **la, double **nu,
 		iter += 1;
 		fun = fun_new;
 
-		//construct Ft
 		Anull(Ft, p, p);
 		for(k=0; k<K; k++){	
 	
@@ -1052,11 +1027,8 @@ void modelB11(int p, int T, int n, int K, double ***Y, double **la, double **nu,
 		cpyk(WR, p, p, k, WRk);
 
 		anull(Eig2, p);
-		#ifdef __HAVE_R_
-			EigValDec(p, Eig2, WRk, &det);
-		#else
-			cephes_symmeigens_down(p, Eig2, WRk, &det);
-		#endif
+
+		EigValDec(p, Eig2, WRk, &det);
 	
 		for(j=0; j<p; j++){
 			Omega[j][j] += Eig2[j];
@@ -1189,11 +1161,8 @@ void modelB12(int p, int T, int n, int K, double ***Y, double **la, double **nu,
 		cpyk(WR, p, p, k, WRk);
 
 		anull(Eig2, p);
-		#ifdef __HAVE_R_
-			EigValDec(p, Eig2, WRk, &det);
-		#else
-			cephes_symmeigens_down(p, Eig2, WRk, &det);
-		#endif
+
+		EigValDec(p, Eig2, WRk, &det);
 	
 		for(j=0; j<p; j++){
 			Omega[j][j][k] = Eig2[j];
@@ -1355,11 +1324,8 @@ void modelB13(int p, int T, int n, int K, double ***Y, double **la, double **nu,
 		cpyk(WR, p, p, k, WRk);
 
 		anull(Eig2, p);
-		#ifdef __HAVE_R_
-			EigValDec(p, Eig2, WRk, &det);
-		#else
-			cephes_symmeigens_down(p, Eig2, WRk, &det);
-		#endif
+
+		EigValDec(p, Eig2, WRk, &det);
 
 
 
@@ -1491,11 +1457,8 @@ void modelB14(int p, int T, int n, int K, double ***Y, double **la, double **nu,
 
 		anull(Eig2, p);
 
-		#ifdef __HAVE_R_
-			EigValDec(p, Eig2, S, &det);
-		#else
-			cephes_symmeigens_down(p, Eig2, S, &det);
-		#endif
+
+		EigValDec(p, Eig2, S, &det);
 
 
 		min = INFINITY;

@@ -7,10 +7,10 @@
 #define Inf 1e+140
 
 
-#ifdef __HAVE_R_
-	#include <R.h>
-	#include <Rmath.h>
-#endif
+
+#include <R.h>
+#include <Rmath.h>
+
 
 
 
@@ -619,12 +619,8 @@ void modelB7(int p, int T, int n, int K, double ***Y, double **la, double **nu, 
 
 
 	anull(Eig2, p);
-	#ifdef __HAVE_R_
-		EigValDec(p, Eig2, WR, &det);
-	#else
-		cephes_symmeigens_down(p, Eig2, WR, &det);
-	#endif
 
+	EigValDec(p, Eig2, WR, &det);
 
 	min = INFINITY;
 	for(j=0; j<p; j++){

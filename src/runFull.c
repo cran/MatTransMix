@@ -36,9 +36,6 @@ void run_Mat_Trans_Full(double *y, int *misc_int, double *misc_double, double *t
 	array1to2(K, p, la1, la);
 	array1to2(K, T, nu1, nu);
 
-	//printf(" la %d %d \n", K, p);
-
-	//printf(" trans_type %d \n", trans_type);
 
 	EM_Trans_Full(p, T, n, K, Y, la, nu, max_iter, misc_double, tau, Mu, invS, invPsi, detS, detPsi, gamma, id, ll, conv, Mu_type, Sigma_type, Psi_type, la_type, scale, trans_type);
 

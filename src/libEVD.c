@@ -7,25 +7,8 @@
 #include "cephes_eigens.h"
 
 
-/*
-  input:
 
-  p - dimension of matrix
-  A - pxp symmetric matrix (only lower triangle used) destroyed on return
-
-  returns:
-  eval - vector of eigenvalues (in ascending order)
-  evec - matrix of eigenvectors 
-  determinant - determinant of the symmetric matrix (as calculated by the 
-                product of the eigenvalues
-
-*/
-
-void cephes_symmeigens_down(int p, double *eval, double **A, 
-			    double (*determinant))
-
-
-{
+void cephes_symmeigens_down(int p, double *eval, double **A, double (*determinant)){
 	int i, j;
 	double *As, *Evec, *Evalues;
 

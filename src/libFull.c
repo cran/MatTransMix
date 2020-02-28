@@ -5,12 +5,12 @@
 #include "MatTransMix.h"
  
 #define Inf 1e+140
+#define pi 3.14159265359
 
 
-#ifdef __HAVE_R_
-	#include <R.h>
-	#include <Rmath.h>
-#endif
+#include <R.h>
+#include <Rmath.h>
+
 
 
 
@@ -26,7 +26,7 @@ void cpyk(double ***a, int nrows, int ncols, int k, double **b)
 }
 
 
-/*copies matrix A to matrix B*/
+
 
 void cpy(double **a, int nrows, int ncols, double **b)
 {
@@ -40,10 +40,6 @@ void cpy(double **a, int nrows, int ncols, double **b)
 }
 
 
-
-
-/* Multiplies matrix a and vector x and puts the result in y which should be
- pre-allocated */
 
 void matxvec(double **a, int arows, int acols,
 		double *x, int xrows, double *y)
@@ -74,7 +70,7 @@ void cpyk2(double **a, int nrows, int ncols, double ***b, int k)
 
 
 
-// Trans transformation for matrix Y
+
 void Trans_trans(int p, int T, double *la, double *nu, double **Y, double **MY, int trans_type){
 
 	int j, t;
@@ -110,12 +106,12 @@ void Trans_trans(int p, int T, double *la, double *nu, double **Y, double **MY, 
 	else if(trans_type == 2){
  
 		for (j=0; j<p; j++){
-			if (fabs(la[j] + nu[t])<1e-12){
-      				for(t=0; t<T; t++) {
+			for(t=0; t<T; t++) {
+				if (fabs(la[j] + nu[t])<1e-12){
+      				
 					MY[j][t] = Y[j][t];
       				}
-   			}else{
-      				for(t=0; t<T; t++) {
+   				else{
 					MY[j][t] = (exp(Y[j][t] * (la[j]  + nu[t])) - 1) / (la[j] + nu[t]);
       				}
     			}
@@ -171,12 +167,13 @@ void Trans_trans_whole(int n, int p, int T, double *la, double *nu, double ***Y,
  		for(i=0; i<n; i++){
 
   			for (j=0; j<p; j++){
-    				if (fabs(la[j] + nu[t])<1e-12){
-      					for(t=0; t<T; t++) {
+
+      				for(t=0; t<T; t++) {
+
+    					if (fabs(la[j] + nu[t])<1e-12){
 						MY[j][t][i] = Y[j][t][i];
       					}
-    				}else{
-      					for(t=0; t<T; t++) {
+    					else{
 						MY[j][t][i] = (exp(Y[j][t][i] * (la[j] + nu[t])) - 1) / (la[j] + nu[t]);
       					}
     				}
@@ -233,7 +230,7 @@ double mGpdf_Trans_Full(int p, int T, double *la, double *nu, double **Y, double
 		trace += maha[j][j];
 	}
 		
-	dens = 1.0 / pow((2*PI), p*T/2.0) / pow(detS, T/2.0) / pow(detPsi, p/2.0) * exp(-1.0 / 2.0 * trace);
+	dens = 1.0 / pow((2*pi), p*T/2.0) / pow(detS, T/2.0) / pow(detPsi, p/2.0) * exp(-1.0 / 2.0 * trace);
 
  	if(trans_type == 1){
 		jac = 1.0;
@@ -439,7 +436,6 @@ void Estep_Trans_Full(int p, int T, int n, int K, double ***Y, double **la, doub
 
 
 
-// Q-function
 double Q1(int n, int p, int T, double *la_nonzero, double *nu, double ***Y, double *gamma_k, double **invSk, double **invPsik, int Mu_type, int trans_type, int la_type){
   
 	int i, j, t;
@@ -506,11 +502,8 @@ double Q1(int n, int p, int T, double *la_nonzero, double *nu, double ***Y, doub
 	}
 	anull(Eig, p+T-1);
 
-	#ifdef __HAVE_R_
-		EigValDec(p+T-1, Eig, matconst, &det);
-	#else
-		cephes_symmeigens_down(p+T-1, Eig, matconst, &det);
-	#endif
+
+	EigValDec(p+T-1, Eig, matconst, &det);
 
 	Anull(L, p+T-1, p+T-1);
 
@@ -701,11 +694,6 @@ double Q1(int n, int p, int T, double *la_nonzero, double *nu, double ***Y, doub
 
 
 
-
-
-
-
-// Q-function
 double Q1_same(int n, int p, int T, double *la_nonzero, double *nu, double ***Y, double *gamma_k, double **invSk, double **invPsik, int Mu_type, int trans_type, int la_type){
   
 	int i, j, t;
@@ -772,11 +760,8 @@ double Q1_same(int n, int p, int T, double *la_nonzero, double *nu, double ***Y,
 	}
 	anull(Eig, p+T-1);
 
-	#ifdef __HAVE_R_
-		EigValDec(p+T-1, Eig, matconst, &det);
-	#else
-		cephes_symmeigens_down(p+T-1, Eig, matconst, &det);
-	#endif
+
+	EigValDec(p+T-1, Eig, matconst, &det);
 
 	Anull(L, p+T-1, p+T-1);
 
@@ -971,9 +956,6 @@ double Q1_same(int n, int p, int T, double *la_nonzero, double *nu, double ***Y,
 
 
 
-
-
-// Q-function
 double Q2(int n, int p, int T, double *nu_nonzero, double *la, double ***Y, double *gamma_k, double **invSk, double **invPsik, int Mu_type, int trans_type){
   
 	int i, j, t;
@@ -1041,11 +1023,8 @@ double Q2(int n, int p, int T, double *nu_nonzero, double *la, double ***Y, doub
 	}
 	anull(Eig, p+T-1);
 
-	#ifdef __HAVE_R_
-		EigValDec(p+T-1, Eig, matconst, &det);
-	#else
-		cephes_symmeigens_down(p+T-1, Eig, matconst, &det);
-	#endif
+
+	EigValDec(p+T-1, Eig, matconst, &det);
 
 	Anull(L, p+T-1, p+T-1);
 
@@ -1316,12 +1295,7 @@ double Mstep_Trans_Full(int p, int T, int n, int K, double *misc_double, double 
 		}
 	}
 	anull(Eig, p+T-1);
-
-	#ifdef __HAVE_R_
-		EigValDec(p+T-1, Eig, matconst, &det);
-	#else
-		cephes_symmeigens_down(p+T-1, Eig, matconst, &det);
-	#endif
+	EigValDec(p+T-1, Eig, matconst, &det);
 
 	Anull(L, p+T-1, p+T-1);
 
@@ -1509,7 +1483,7 @@ double Mstep_Trans_Full(int p, int T, int n, int K, double *misc_double, double 
 	
 	if(la_type == 0){
 		Q_value0 = 0;
-		//optimize with respect to la;	
+	
 		for(k=0; k<K; k++){
 
 			cpyv(gamma, k, n, gamma_k);		
@@ -1541,11 +1515,11 @@ double Mstep_Trans_Full(int p, int T, int n, int K, double *misc_double, double 
 	}
 
 
-	//la equal for all dimensions 
+
 	else if(la_type == 1){
 		Q_value0 = 0;
 
-		//optimize with respect to la;	
+	
 		for(k=0; k<K; k++){
 				
 
@@ -1563,7 +1537,7 @@ double Mstep_Trans_Full(int p, int T, int n, int K, double *misc_double, double 
 				la_nonzero[0] = la[k][0];
 
 				min_value = simplex1(Q1_same, n, p, T, nu[k], Y, gamma_k, invSk, invPsik, la_nonzero, eps, 0.1, Mu_type, trans_type, la_type);
-				//printf(" Q  %lf\n", la_nonzero[0]);
+				
 
 				for(j=0; j<p; j++){
 
@@ -1597,7 +1571,9 @@ double Mstep_Trans_Full(int p, int T, int n, int K, double *misc_double, double 
 	for(k=0; k<K; k++){
 			
 		cpyv(gamma, k, n, gamma_k);		
-
+			
+		cpyk(invS, p, p, k, invSk);		
+		cpyk(invPsi, T, T, k, invPsik);		
 
 		if(trans_type != 0){
 
@@ -1665,11 +1641,7 @@ void EM_Trans_Full(int p, int T, int n, int K, double ***Y, double **la, double 
 	loglik_old = -INFINITY;
 	iter = 0;
 
-	//printf(" trans_type  %d\n", trans_type);
 	do{
-		//if(loglik_old <loglik){
-			//printf(" ll  %lf\n", loglik_old);
-		//}
 		loglik = loglik_old; 
 		
 		iter += 1;
@@ -1693,8 +1665,6 @@ void EM_Trans_Full(int p, int T, int n, int K, double ***Y, double **la, double 
 
 
 	ll[0] = mGloglik_Trans_Full(p, T, n, K, Y, la, nu, tau, Mu, invS, invPsi, detS, detPsi, 1.0, trans_type);
-
-	//printf(" ll  %lf\n", ll[0]);
 
 	M += K-1;
 

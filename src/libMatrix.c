@@ -4,8 +4,7 @@
 #include "MatTransMix.h"
 
 
-/* Multiplies matrices a and b and puts the result in c which should be
- pre-allocated */
+
 
 void multiply(double **a, int arows, int acols,
 	      double **b, int brows, int bcols, double **c)
@@ -21,8 +20,7 @@ void multiply(double **a, int arows, int acols,
 
 }
 
-/* Multiplies matrices a and b and puts the result in c[m] which should be
- pre-allocated */
+
 
 void multiply2(double **a, int arows, int acols,
 	       double **b, int brows, int bcols, double ***c, int m)
@@ -38,7 +36,6 @@ void multiply2(double **a, int arows, int acols,
 
 }
 
-/*copies matrix A[k] to matrix B */
 
 void cpy1(double ***a, int k, int nrows, int ncols, double **b)
 {
@@ -51,7 +48,7 @@ void cpy1(double ***a, int k, int nrows, int ncols, double **b)
 
 }
 
-/*copies matrix A to matrix B[k] */
+
 
 void cpy2(double **a, int nrows, int ncols, double ***b, int k)
 {
@@ -79,7 +76,7 @@ void cpyv(double **A, int col, int nrows, double *V){
 
 
 
-/* finds the smallest element in x */
+
 
 int vecMin(double *x, int p, double (*min)){
 
@@ -100,7 +97,7 @@ int vecMin(double *x, int p, double (*min)){
 }
 
 
-/* finds the largest element in x */
+
 
 int vecMax(double *x, int p, double (*max)){
 
@@ -121,8 +118,6 @@ int vecMax(double *x, int p, double (*max)){
 }
 
 
-/* multiplies x by x' */
-
 int vec11vecSQ(double *y, int p, double **Res){
 	
 	int i,j;
@@ -137,7 +132,6 @@ int vec11vecSQ(double *y, int p, double **Res){
 }
 
 
-/* multiplies x' by y */
 
 double vecNNvec(int p, double *y, double *x){
 	
@@ -154,9 +148,6 @@ double vecNNvec(int p, double *y, double *x){
 
 
 
-
-/* subtracts vectors */
-
 int vec_(int a, double *Res, double *Y){
 	
 	int i;
@@ -170,7 +161,6 @@ int vec_(int a, double *Res, double *Y){
 
 
 
-/* Computes V %*% A %*% t(V), return a scaler */
 
 double vAvt(double *v, int p, double **A){
 
@@ -211,8 +201,6 @@ double vAvt(double *v, int p, double **A){
 
 
 
-/* subtracts matrices */
-
 int mat_(int a, int b,double **Res, double **Y){
 	
 	int i,j;
@@ -227,7 +215,7 @@ int mat_(int a, int b,double **Res, double **Y){
 }
 
 
-/* finds sums of rows in matrix */ 
+ 
 
 int vecsum(int a, int b,double **OO, double *Res){
 	
@@ -244,7 +232,6 @@ int vecsum(int a, int b,double **OO, double *Res){
 }
 
 
-/* multiplies OO by OO' */
 
 int MatrixProd(double **OO, int p, int m, double **Res){
      
@@ -263,7 +250,6 @@ int MatrixProd(double **OO, int p, int m, double **Res){
 }
 
 
-/* computes Kronecker product */
 
 int Kronecker(double **A, int a1, int a2, double **B, int b1, int b2, double **Res){
 
@@ -318,7 +304,6 @@ int Kronecker(double **A, int a1, int a2, double **B, int b1, int b2, double **R
 }
 
 
-/* computes G matrix */
 
 int Gmat(int p, int m, double **Res){
      
@@ -358,7 +343,7 @@ int Gmat(int p, int m, double **Res){
 }
 
 
-/* provides transpose */
+
 
 void tA(double **A, int a, int b, double **Res){
 
@@ -373,7 +358,7 @@ void tA(double **A, int a, int b, double **Res){
 }
 
 
-/* computes product of three matrices */
+
 
 int ZXY(double **Z, int az, int bz, double **X, int ax, int bx, double **Y, int ay, int by, double **Res){
 
@@ -391,7 +376,7 @@ int ZXY(double **Z, int az, int bz, double **X, int ax, int bx, double **Y, int 
 }
 
 
-/* Computes X %*% A %*% t(X) */
+
 
 void XAXt(double **X, int p, double **A, double **Res){
 
@@ -411,7 +396,6 @@ void XAXt(double **X, int p, double **A, double **Res){
 }
 
 
-/* Computes X %*% A %*% t(X) and writes results into Res[k,,] */
 
 void XAXt2(double **X, int p, double **A, double ***Res, int k){
 
@@ -430,7 +414,6 @@ void XAXt2(double **X, int p, double **A, double ***Res, int k){
 
 }
 
-/* provides 0-matrix */
 
 void Anull(double **X, int ax, int bx){
      
@@ -444,7 +427,6 @@ void Anull(double **X, int ax, int bx){
 }
 
 
-/* provides 0-vector */
 
 void anull(double *x, int p){
      
@@ -456,7 +438,6 @@ void anull(double *x, int p){
 }
 
 
-/* provides 0-matrix of integers */
 
 void Anulli(int **X, int ax, int bx){
      
@@ -470,7 +451,6 @@ void Anulli(int **X, int ax, int bx){
 }
 
 
-/* provides 0-vector of integers */
 
 void anulli(int *x, int p){
      
@@ -497,8 +477,6 @@ void Anull3(double ***X, int ax, int bx, int cx){
 
 
 
-/* transforms matrix into vector */
-
 int asvector(double **X, int ax, int bx, double *ResVec){
      
     int i,j,k;
@@ -517,7 +495,6 @@ int asvector(double **X, int ax, int bx, double *ResVec){
 }
 
 
-/* multiplies 3d array by constant  */
 
 void cxS(int p, int K, double ***S, double c){
 
@@ -673,7 +650,6 @@ int Factorial(int a){
 
 
 
-/* extract rows in matrix using index */
 
 void extract(int n, int p, double **X, int *index, double **Y){
      

@@ -25,10 +25,10 @@
   }
 }
 \details{The data have been made publicly available by FBI's Uniform Crime Reports.}
-
 \examples{
 
 data(crime)
 
 }
+
 \keyword{datasets}

@@ -37,16 +37,29 @@ MatTrans.init <- function(Y, K, n.start = 10, scale = 1){
 		s <- sample(1:n,K)
 		
 		mat.Y <- t(apply(Y, 3, as.matrix))
-		if((p>1) || (T>1)){
+
+		iif_1 <- 0
+
+		if(p>1){iif_1 <- 1}
+		if(T>1){iif_1 <- 1}
+
+		if(iif_1 == 1){
 			centers <- mat.Y[s,]
 		}
 		else{
 			centers <- mat.Y[s]
 		}
+
 		D <- NULL
 		if(K == 1) {D <- cbind(D, apply(mat.Y, 1, eucl.dist, centers))}
 		else{
-			if((p>1) || (T>1)){
+
+			iif_2 <- 0
+
+			if(p>1){iif_2 <- 1}
+			if(T>1){iif_2 <- 1}
+
+			if(iif_2 == 1){
 				for (k in 1:K) D <- cbind(D, apply(mat.Y, 1, eucl.dist, centers[k,]))
 			}
 			else{
@@ -59,7 +72,24 @@ MatTrans.init <- function(Y, K, n.start = 10, scale = 1){
 		iif <- 0
 		for (k in 1:K){
 			index <- PI[,k] == 1
-			if((p>1) && (T>1)){
+
+			iif_3 <- 0
+
+			if(p>1){
+				if(T>1){
+					iff_3 <- 1
+				}
+			}
+
+			iif_4 <- 0
+
+			if(p==1){
+				if(T>1){
+					iff_4 <- 1
+				}
+			}
+
+			if(iff_3 == 1){
 				var.est <- apply(Y[,,index], 2, as.matrix, byrow = TRUE)
 				var.est <- var(var.est)
 				A <- try(Psi.inv[,,k] <- solve(var.est))
@@ -70,7 +100,7 @@ MatTrans.init <- function(Y, K, n.start = 10, scale = 1){
 				detS[k] <- 1/det(Sigma.inv[,,k])
 
 			}
-			else if((p == 1) && (T > 1)){
+			if(iif_4 == 1){
 				var.est <- var(t(Y[,,index]))
 				A <- try(Psi.inv[,,k] <- solve(var.est))
 				detPsi[k] <- 1/(Psi.inv[,,k])
@@ -78,7 +108,7 @@ MatTrans.init <- function(Y, K, n.start = 10, scale = 1){
 				B <- try(Sigma.inv[,,k] <- solve(var.est))
 				detS[k] <- 1/det(Sigma.inv[,,k])
 			}
-			else if(T == 1){
+			if(T == 1){
 				var.est <- var(as.vector(Y[,,index]))
 				A <- try(Psi.inv[,,k] <- solve(var.est))
 				detPsi[k] <- 1/(Psi.inv[,,k])
@@ -87,7 +117,8 @@ MatTrans.init <- function(Y, K, n.start = 10, scale = 1){
 				detS[k] <- 1/det(Sigma.inv[,,k])
 
 			}
-			if((class(A) == "try-error") || (class(B) == "try-error")){iif <- 1}	
+			if(class(A) == "try-error"){iif <- 1}	
+			if(class(B) == "try-error"){iif <- 1}
 		}
 		if(iif == 0){
 			W.result$y <- as.vector(Y)				
@@ -209,21 +240,27 @@ MatTrans.EM <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NULL, t
 		if(length(initial) < 1) stop("Wrong initialization...\n")
 
 		K <- length(initial[[1]]$tau)
-		if(is.null(la) && (trans != "Gaussian")){
-			la <- matrix(0.5, K, p)
-			cat("Initial lambda -- 0.5 \n")
-
+		if(is.null(la)){
+			if(trans != "Gaussian"){
+				la <- matrix(0.5, K, p)
+				cat("Initial lambda -- 0.5 \n")
+			}
 		}
-		if(is.null(nu) && (trans != "Gaussian")){
-			nu <- matrix(0.5, K, T)
-			cat("Initial nu -- 0.5 \n")
+		if(is.null(nu)){
+			if(trans != "Gaussian"){
+				nu <- matrix(0.5, K, T)
+				cat("Initial nu -- 0.5 \n")
+			}
 		}
-
-		if((la.type == 0) && (trans != "Gaussian")){
-			cat("Unrestricted lambda type \n")
+		if(la.type == 0){
+			if(trans != "Gaussian"){
+				cat("Unrestricted lambda type \n")
+			}
 		}
-		else if((la.type == 1) && (trans != "Gaussian")){
-			cat("Lambda same across all variables \n")
+		if(la.type == 1){
+			if(trans != "Gaussian"){
+				cat("Lambda same across all variables \n")
+			}
 		}
 
 
@@ -362,12 +399,29 @@ MatTrans.EM <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NULL, t
 				try3 <- try(Sigma <- array(apply(invS, 3, solve), dim = c(p,p,K)))
 				try4 <- try(Psi <- array(apply(invPsi, 3, solve), dim = c(T,T,K)))
 
-				if ((class(try0) != "try-error") && (class(try1) != "try-error") && (class(try2) != "try-error")){
+				iif_0 <- 0
+		
+				if(class(try0) != "try-error"){
+					if(class(try1) != "try-error"){
+						if(class(try2) != "try-error"){
+							iif_0 <- 1
+
+						}
+					}
+
+				}
+		
+
+				if (iif_0 == 1){
 
 			
 					if(!is.na(temp$ll[1])){	
 						
-						if ((temp$ll[1] > loglik[iter]) && (class(try3) != "try-error") && (class(try4) != "try-error") && all(table(temp$id) > size.control) && (length(table(temp$id))==K)){
+						if(temp$ll[1] > loglik[iter]){
+						if(class(try3) != "try-error"){
+						if(class(try4) != "try-error"){
+						if(all(table(temp$id) > size.control)){
+						if(length(table(temp$id))==K){
 
 
 							loglik[iter] <- temp$ll[1]	
@@ -413,8 +467,10 @@ MatTrans.EM <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NULL, t
 							r$bic <- temp$ll[2]
 							
 							result[[iter]] <- r
-							
-
+						}
+						}
+						}	
+						}
 						}
 					}
 

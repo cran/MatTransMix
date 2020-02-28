@@ -1,4 +1,4 @@
-#ifndef MATTRANSMIX_H
+
 #define MATTRANSMIX_H
 
 
@@ -69,12 +69,7 @@ void cpyv(double **A, int col, int nrows, double *V);
 void matxvec(double **a, int arows, int acols, double *x, int xrows, double *y);
 
 
-/* WCC: "libEVD.c" and "libEVD_LAPACK.c" */
-#ifndef __HAVE_R_
-	void cephes_symmeigens_down(int p, double *eval, double **A, double (*determinant));
-#else
-	void dsyev_(char *JOBZp, char *UPLOp,int *Np, double *A, int *LDAp, double *Wp, double *WORK, int *LWORK, int *INFOp);
-	void EigValDec(int size, double *W, double **A, double (*determinant));
-#endif
 
-#endif /* MATTRANSMIX_H */
+
+void dsyev_(char *JOBZp, char *UPLOp,int *Np, double *A, int *LDAp, double *Wp, double *WORK, int *LWORK, int *INFOp);
+void EigValDec(int size, double *W, double **A, double (*determinant));

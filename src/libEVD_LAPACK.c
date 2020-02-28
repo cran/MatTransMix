@@ -4,13 +4,6 @@
 
 
 void EigValDec(int size, double *W, double **A, double (*determinant))
-
-/*
-	returns:
-	W - vector of eigenvalues
-	A - matrix of eigenvectors 
-*/
-
 {
   int i, j, INFO, N, LDA;
   char uplo='L';

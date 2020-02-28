@@ -51,24 +51,6 @@ Runs the EM algorithm for modeling and clustering matrices for a provided datase
   \item{best.loglik }{ best logliklihood}
   \item{best.bic }{ best bic}
 }
-
-\examples{
-set.seed(123)
-
-data(crime)
-
-
-Y <- crime$Y[c(2,7),,] / 1000
-
-p <- dim(Y)[1]
-T <- dim(Y)[2]
-n <- dim(Y)[3]
-K <-  2
-
-init <- MatTrans.init(Y, K = K, n.start = 3)
-Gauss <- MatTrans.EM(Y, initial = init, max.iter = 1000, model = "G-EII-UI")
-
-}
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{ EM algorithm }% __ONLY ONE__ keyword per line
