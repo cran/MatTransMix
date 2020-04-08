@@ -1,6 +1,4 @@
-%  file MatManlyMix/man/IMDb.Rd  
-%  This file is a component of the package 'MatManlyMix' for R
-%---------------------
+
 \name{IMDb}
 \alias{IMDb}
 \docType{data}

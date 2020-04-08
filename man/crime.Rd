@@ -1,6 +1,4 @@
-%  file MatManlyMix/man/cime.Rd  
-%  This file is a component of the package 'MatManlyMix' for R
-%---------------------
+
 \name{crime}
 \alias{crime}
 \docType{data}
