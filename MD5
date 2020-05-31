@@ -1,10 +1,10 @@
-2d55baa941f3f0cb764f4d30839de811 *DESCRIPTION
+06134bc1b05b28e93581efc3b6921edd *DESCRIPTION
 7286869fb581a3038dacfce134781116 *NAMESPACE
-ae76a5f29c1beab9f6bada6cbfb1b5d2 *NEWS
+8e175978f33d687c3e4bba5858c5da7c *NEWS
 7258b03f23936705d65db766f378ad8a *R/libMatTransFull.R
 3d76bbbb5012d0a5c641424fa94e9061 *R/print.R
 4fd9535927e22d1e3b2deee49cfb928e *data/IMDb.RData
-eba68dd647aa3fdeff9c97d2e01c0be8 *data/Salary.RData
+d78dee47245971deb4c7fbf083087e43 *data/Salary.RData
 90afe60a89c183fb4ce06068f915a55d *data/crime.RData
 9d6e1edb8cfa99d04e1ede856ac5cd66 *demo/00Index
 e2c4d5c6fcec9609bc670206be92f0c5 *demo/EMalgorithm1.R
