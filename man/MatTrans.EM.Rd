@@ -7,7 +7,8 @@ Runs the EM algorithm for matrix clustering}
 \usage{
 MatTrans.EM(Y, initial = NULL, la = NULL, nu = NULL, 
 model = NULL, trans = "Gaussian", la.type = 0, tol = 1e-05, 
-max.iter = 1000, size.control = 0, silent = TRUE)
+short.iter = NULL, long.iter = 1000, all.models = TRUE, 
+size.control = 0, silent = TRUE)
 }
 % maybe also 'usage' for other objects documented here.
 \arguments{
@@ -19,7 +20,9 @@ max.iter = 1000, size.control = 0, silent = TRUE)
   \item{trans }{ transformation method: Gaussian, Power, Manly}
   \item{la.type }{ lambda type 0 or 1, 0: unrestricted, 1: same lambda across all variables}
   \item{tol }{ tolerance level}
-  \item{max.iter }{ maximum number of iterations}
+  \item{short.iter }{ number of short EM iterations; if not specified, just run long EM}
+  \item{long.iter }{ number of long EM iterations}
+  \item{all.models }{ if true, run long EM for all models; otherwise just the best model in terms of BIC }
   \item{size.control }{ minimum size of clusters allowed for controlling spurious solutions}
   \item{silent }{ whether to produce output of steps or not}
 }

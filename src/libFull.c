@@ -1718,13 +1718,15 @@ void EM_Trans_Full(int p, int T, int n, int K, double ***Y, double **la, double 
 	for(i=0; i<n; i++){
 		max = -INFINITY;
 		for(k=0; k<K; k++){
+
 			if(gamma[i][k] > max){
 				id[i] = k+1;
+			
 				max = gamma[i][k];
 			}
 
 		}
-
+		
 	}
 
 

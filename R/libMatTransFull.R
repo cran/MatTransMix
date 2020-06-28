@@ -169,7 +169,7 @@ code.convert <- function(code){
                ifelse(Sigma == "VVV", 14,
  	       ifelse(Sigma == "XXX", 0, -1)))))))))))))))
   
-  Psi.num <- ifelse(Psi == "UI", 1,
+  Psi.num <- ifelse(Psi == "II", 1,
              ifelse(Psi == "EI", 2,
              ifelse(Psi == "VI", 3,
              ifelse(Psi == "EE", 4,
@@ -208,7 +208,7 @@ code.back <- function(num){
            ifelse(Sigma.num == 13, "EVV", 
            ifelse(Sigma.num == 14, "VVV", NULL))))))))))))))
   
-  Psi <- ifelse(Psi.num == 1, "UI", 
+  Psi <- ifelse(Psi.num == 1, "II", 
          ifelse(Psi.num == 2, "EI", 
          ifelse(Psi.num == 3, "VI", 
          ifelse(Psi.num == 4, "EE", 
@@ -223,7 +223,7 @@ code.back <- function(num){
 
 
 
-MatTrans.EM <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NULL, trans = "Gaussian", la.type = 0, tol = 1e-05, max.iter = 1000, size.control = 0, silent = TRUE){
+MatTrans.EM.orig <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NULL, trans = "Gaussian", la.type = 0, tol = 1e-05, max.iter = 1000, size.control = 0, silent = TRUE){
 
 	A <- dim(Y)
 	p <- A[1]
@@ -272,7 +272,7 @@ MatTrans.EM <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NULL, t
 			for(Mu.type in 1:2){
 				for(Sigma.type in 1:14){
 					for(Psi.type in 1:7){
-																	iter <- iter + 1
+															iter <- iter + 1
 						Model[iter] <- paste(code.back(c(Mu.type, Sigma.type, Psi.type))$Mu, "-", code.back(c(Mu.type, Sigma.type, Psi.type))$Sigma, "-", code.back(c(Mu.type, Sigma.type, Psi.type))$Psi, sep="")
 								
 						index[,iter] <- c(Mu.type, Sigma.type, Psi.type)
@@ -336,7 +336,7 @@ MatTrans.EM <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NULL, t
 
 		loglik <- rep(-Inf, dim(index)[2])
 		bic <- rep(Inf, dim(index)[2]) 
-		result <- list()
+
 				
 		if(trans == "Power"){
 			trans.type <- 1
@@ -354,7 +354,7 @@ MatTrans.EM <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NULL, t
 
 		}
 
-
+		result <- list()
 
 		for(i in 1:length(initial)){
 			if(silent != TRUE){
@@ -389,9 +389,11 @@ MatTrans.EM <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NULL, t
 				#cat("trans.type", trans.type, "\n")
 				misc_int <- c(p, T, n, K, max.iter, index[1,iter], index[2,iter], index[3,iter], la.type, trans.type)
 
-				try0 <- try(temp <- .C("run_Mat_Trans_Full", y = as.double(initial[[i]]$y), misc_int = as.integer(misc_int), misc_double = as.double(misc_double), tau = as.double(initial[[i]]$tau), la1 = as.double(as.vector(la)), nu1 = as.double(as.vector(nu)), Mu1 = as.double(initial[[i]]$Mu1), invS1 = as.double(initial[[i]]$invS1), invPsi1 = as.double(initial[[i]]$invPsi1), detS = as.double(initial[[i]]$detS), detPsi = as.double(initial[[i]]$detPsi), gamma1 = as.double(initial[[i]]$gamma1), id = as.integer(id), ll = as.double(ll), conv = as.integer(conv), scale = as.double(initial[[i]]$scale), PACKAGE = "MatTransMix"), silent = TRUE)
+				#cat(la, "la", "\n")
 
-				 
+				try0 <- try(temp <- .C("run_Mat_Trans_Full", y = as.double(initial[[i]]$y), misc_int = as.integer(misc_int), misc_double = as.double(misc_double), tau = as.double(initial[[i]]$tau), la1 = as.double(as.vector(la)), nu1 = as.double(as.vector(nu)), Mu1 = as.double(initial[[i]]$Mu1), invS1 = as.double(initial[[i]]$invS1), invPsi1 = as.double(initial[[i]]$invPsi1), detS = as.double(initial[[i]]$detS), detPsi = as.double(initial[[i]]$detPsi), gamma1 = as.double(initial[[i]]$gamma1), id = as.integer(id), ll = as.double(ll), conv = as.integer(conv), scale = as.double(initial[[i]]$scale), PACKAGE = "MatTransMix"), silent = TRUE)
+				
+				#cat("try0", class(try0), "\n")			 
 
 				try1 <- try(invS <- array(temp$invS1, dim = c(p, p, K)))
 				try2 <- try(invPsi <- array(temp$invPsi1, dim = c(T, T, K)))
@@ -414,22 +416,22 @@ MatTrans.EM <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NULL, t
 
 				if (iif_0 == 1){
 
-			
+					if(silent != TRUE){
+																	cat("Model", Model[iter], "BIC", temp$ll[2],"\n")
+																											}
 					if(!is.na(temp$ll[1])){	
 						
 						if(temp$ll[1] > loglik[iter]){
 						if(class(try3) != "try-error"){
 						if(class(try4) != "try-error"){
-						if(all(table(temp$id) > size.control)){
-						if(length(table(temp$id))==K){
+						if(temp$conv[2] != 1){
 
+						check1 <- all(table(temp$id) > size.control)
+						check2 <- length(table(temp$id))==K
+						if(check1 && check2){
 
 							loglik[iter] <- temp$ll[1]	
-							bic[iter] <- temp$ll[2]	
-
-							if(silent != TRUE){
-								cat("Model", Model[iter], "BIC", bic[iter], "\n")
-							}
+							bic[iter] <- temp$ll[2]
 											
 							r <- NULL
 						
@@ -469,6 +471,51 @@ MatTrans.EM <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NULL, t
 							result[[iter]] <- r
 						}
 						}
+						else{
+							loglik[iter] <- temp$ll[1]	
+							bic[iter] <- temp$ll[2]
+											
+							r <- NULL
+						
+							r$tau <- temp$tau
+							if(trans.type != 0){
+								r$la <- matrix(temp$la1, nrow = K)
+								r$nu <- matrix(temp$nu1, nrow = K)
+								r$LA <- array(NA, dim = c(p, T, K))
+								for(k in 1:K){
+									for(j in 1:p){
+										for(t in 1:T){
+											r$LA[j,t,k] <- r$la[k,j] + r$nu[k,t]
+										}
+									}
+								}
+							}
+							else{
+								r$la <- NA
+								r$nu <- NA
+								r$LA <- NA
+
+							}
+							r$Sigma <- Sigma
+							r$Psi <- Psi
+							r$detS <- temp$detS
+							r$detPsi <- temp$detPsi
+							r$Mu <- array(temp$Mu1, dim = c(p, T, K))
+							r$gamma <- matrix(temp$gamma1, nrow = n)
+							r$iter <- temp$conv[1]
+							r$pars <- temp$conv[3]
+
+							r$id <- temp$id
+							r$flag <- temp$conv[2]
+							r$ll <- temp$ll[1]
+							r$bic <- temp$ll[2]
+							
+							result[[iter]] <- r
+
+
+						}
+
+						
 						}	
 						}
 						}
@@ -604,7 +651,7 @@ check.Psi <- function(A){
 		for(j in 1:14){
 			compare <- loglik[,j,i]	
 			if(compare[2]<compare[1]){
-				cat("EI>UI", compare[2], compare[1], "Mu", i, "Sigma", j, "\n")
+				cat("EI>II", compare[2], compare[1], "Mu", i, "Sigma", j, "\n")
 			}
 			if(compare[3]<compare[2]){
 				cat("VI>EI", compare[3], compare[2], "Mu", i, "Sigma", j, "\n")
@@ -651,4 +698,132 @@ check.Mu <- function(A){
 	
 
 }
+
+
+
+
+
+MatTrans.EM <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NULL, trans = "Gaussian", la.type = 0, tol = 1e-05, short.iter = NULL, long.iter = 1000, all.models = TRUE, size.control = 0, silent = TRUE){
+
+	if(is.null(short.iter)){
+
+		ret <- MatTrans.EM.orig(Y, initial = init, la = la, nu = nu, model = model, trans = trans, la.type = la.type, tol = tol, max.iter = long.iter, size.control = size.control, silent = silent)	
+		class(ret) <- "MatTransMix"
+
+	}
+	else{
+		cat("Short EM has been started", "\n")
+
+		shortEM <- MatTrans.EM.orig(Y, initial = initial, la = la, nu = nu, model = model, trans = trans, la.type = la.type, tol = tol, max.iter = short.iter, size.control = size.control, silent = silent)
+
+
+		cat("Long EM has been started", "\n")
+
+		if(!all.models){
+
+			cat("For the best model:", shortEM$best.model, "\n")
+
+			init <- list()
+
+			W.result <- NULL
+			W.result$y <- as.vector(Y)				
+			W.result$gamma1 <- shortEM$best.result[[1]]$gamma
+			W.result$invS1 <- apply(shortEM$best.result[[1]]$Sigma, 3, solve)
+			W.result$tau <-  shortEM$best.result[[1]]$tau
+			W.result$Mu1 <-  shortEM$best.result[[1]]$Mu
+			W.result$invPsi1 <- apply(shortEM$best.result[[1]]$Psi, 3, solve)
+			W.result$detS <- shortEM$best.result[[1]]$detS
+			W.result$detPsi <- shortEM$best.result[[1]]$detPsi			
+	
+			init[[1]] <- W.result	
+		
+			if(trans != "Gaussian"){
+
+				longEM <- MatTrans.EM.orig(Y, initial = init, la = shortEM$best.result[[1]]$la, nu = shortEM$best.result[[1]]$nu, model = shortEM$best.model, trans = shortEM$trans, la.type = la.type, tol = tol, max.iter = long.iter, size.control = size.control, silent = silent)
+			}
+			else{
+
+				longEM <- MatTrans.EM.orig(Y, initial = init, la = NULL, nu = NULL, model = shortEM$best.model, trans = shortEM$trans, la.type = la.type, tol = tol, max.iter = long.iter, size.control = size.control, silent = silent)
+
+			}
+			ret <- longEM
+	
+			class(ret) <- "MatTransMix"
+		}
+		else{
+
+			cat("For all models:", shortEM$model, "\n")
+
+			longEM <- list()
+
+			longEM$model <- shortEM$model
+
+			longEM$trans <- shortEM$trans
+
+			longEM$result <- list()
+
+
+			loglik <- rep(-Inf, length(shortEM$model))
+			bic <- rep(Inf, length(shortEM$model)) 
+
+
+			for(i in 1:length(shortEM$model)){
+
+				init <- list()
+
+				W.result <- NULL
+				W.result$y <- as.vector(Y)				
+				W.result$gamma1 <- shortEM$result[[i]]$gamma
+				W.result$invS1 <- apply(shortEM$result[[i]]$Sigma, 3, solve)
+				W.result$tau <-  shortEM$result[[i]]$tau
+				W.result$Mu1 <-  shortEM$result[[i]]$Mu
+				W.result$invPsi1 <- apply(shortEM$result[[i]]$Psi, 3, solve)
+				W.result$detS <- shortEM$result[[i]]$detS
+				W.result$detPsi <- shortEM$result[[i]]$detPsi			
+	
+				#cat(W.result$gamma1, "\n")
+				init[[1]] <- W.result	
+				
+				if(trans != "Gaussian"){
+
+					try0 <- try(longEM$result[[i]] <- MatTrans.EM.orig(Y, initial = init, la = shortEM$result[[i]]$la, nu = shortEM$result[[i]]$nu, model = shortEM$model[i], trans = shortEM$trans, la.type = la.type, tol = tol, max.iter = long.iter, size.control = size.control, silent = silent)$result[[1]])
+
+				}
+				else{
+
+					try0 <- try(longEM$result[[i]] <- MatTrans.EM.orig(Y, initial = init, la = NULL, nu = NULL, model = shortEM$model[i], trans = shortEM$trans, la.type = la.type, tol = tol, max.iter = long.iter, size.control = size.control, silent = silent)$result[[1]])
+
+
+				}
+				try0 <- try(loglik[i] <- longEM$result[[i]]$ll)
+				try0 <- try(bic[i] <- longEM$result[[i]]$bic)
+
+
+			}
+
+
+
+			find.min <- which.min(bic)
+			best.result <- longEM$result[find.min]
+			best.model <- longEM$model[find.min]
+			best.loglik <- loglik[find.min]
+			best.bic <- bic[find.min]
+
+
+			ret <- list(result = longEM$result, model = longEM$model, loglik = loglik, bic = bic, best.result = best.result, best.model = best.model, best.loglik = best.loglik, best.bic = best.bic, trans = trans)
+
+	
+			class(ret) <- "MatTransMix"
+
+
+		}
+	}
+
+	return(ret)
+
+
+}
+
+
+
 

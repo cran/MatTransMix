@@ -1,7 +1,7 @@
-06134bc1b05b28e93581efc3b6921edd *DESCRIPTION
+e5593001ea008f9401f9e12b27840ed4 *DESCRIPTION
 7286869fb581a3038dacfce134781116 *NAMESPACE
-8e175978f33d687c3e4bba5858c5da7c *NEWS
-7258b03f23936705d65db766f378ad8a *R/libMatTransFull.R
+be9a5cb878f86851a5b22a7cb3b99143 *NEWS
+383310b3e55bc7c522a262f0e2b8a83b *R/libMatTransFull.R
 3d76bbbb5012d0a5c641424fa94e9061 *R/print.R
 4fd9535927e22d1e3b2deee49cfb928e *data/IMDb.RData
 d78dee47245971deb4c7fbf083087e43 *data/Salary.RData
@@ -12,7 +12,7 @@ e2c4d5c6fcec9609bc670206be92f0c5 *demo/EMalgorithm1.R
 93719edd24f305cd858d7196ee341946 *demo/IMDb.R
 afe7ac5f57412b7aeffd5676a1bf3150 *inst/CITATION
 c71697cb4f41155d91dfa2f43917d276 *man/IMDb.Rd
-dc304556678584ac061a1f5252a2612b *man/MatTrans.EM.Rd
+35019b64f2b521fb33dfdeb5089dfc88 *man/MatTrans.EM.Rd
 bf5f1f2856a2a57304c8b8032a2ab0a6 *man/MatTrans.init.Rd
 26f374ce61e24bdce2c53fc5d6145abc *man/MatTransMix-package.Rd
 a5e611f73bab512c560feeac4c6857e6 *man/Salary.Rd
@@ -28,7 +28,7 @@ a5ab2d319e2211eac3deb9a2b063dd88 *src/MatTransMix.h
 a34982fa892b7f7a258d1d3a39aa0bb9 *src/libCEigen.c
 c650f3325ebe4846a79be40e3bdeaf44 *src/libEVD.c
 9d498f9d334cb567eda02094e73b6182 *src/libEVD_LAPACK.c
-fc73b26099544dc2984557a7ad9e4fc3 *src/libFull.c
+8905c3dcc7299e0598966263a47c1656 *src/libFull.c
 892260512f64840ba1e92abccc217407 *src/libMatrix.c
 1e317fa44035224cabecaca5abc00b35 *src/libPsi.c
 ae4c91f34adbbe122a9b47f8e135fc62 *src/libRandC.c
