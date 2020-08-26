@@ -6,7 +6,8 @@
 Runs the EM algorithm for matrix clustering}
 \usage{
 MatTrans.EM(Y, initial = NULL, la = NULL, nu = NULL, 
-model = NULL, trans = "Gaussian", la.type = 0, tol = 1e-05, 
+model = NULL, trans = "None", la.type = 0, 
+row.skew = TRUE, col.skew = TRUE, tol = 1e-05, 
 short.iter = NULL, long.iter = 1000, all.models = TRUE, 
 size.control = 0, silent = TRUE)
 }
@@ -17,12 +18,14 @@ size.control = 0, silent = TRUE)
   \item{la }{ initial skewness for rows (K x p)}
   \item{nu }{ initial skewness for columns (K x T)}
    \item{model }{ parsimonious model type, if null, then all 196 models are run}
-  \item{trans }{ transformation method: Gaussian, Power, Manly}
+  \item{trans }{ transformation method: None (Gaussian models), Power, Manly}
   \item{la.type }{ lambda type 0 or 1, 0: unrestricted, 1: same lambda across all variables}
+  \item{row.skew }{ if skewness for rows are fitted: TRUE or FALSE}
+  \item{col.skew }{ if skewness for columns are fitted: TRUE or FALSE}
   \item{tol }{ tolerance level}
   \item{short.iter }{ number of short EM iterations; if not specified, just run long EM}
   \item{long.iter }{ number of long EM iterations}
-  \item{all.models }{ if true, run long EM for all models; otherwise just the best model in terms of BIC }
+  \item{all.models }{ if true, run long EM for all models; otherwise just the best model returned by short EM in terms of BIC }
   \item{size.control }{ minimum size of clusters allowed for controlling spurious solutions}
   \item{silent }{ whether to produce output of steps or not}
 }
@@ -53,6 +56,18 @@ Runs the EM algorithm for modeling and clustering matrices for a provided datase
   \item{best.model }{ best model type}
   \item{best.loglik }{ best logliklihood}
   \item{best.bic }{ best bic}
+}
+\examples{
+set.seed(123)
+data(IMDb)
+Y <- IMDb$Y/100
+p <- dim(Y)[1]
+T <- dim(Y)[2]
+n <- dim(Y)[3]
+K <- 3
+init <- MatTrans.init(Y, K = K, n.start = 2)
+M <- MatTrans.EM(Y, initial = init, model = "X-VVV-VV", 
+long.iter = 1000, silent = FALSE)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

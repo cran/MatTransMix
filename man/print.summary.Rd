@@ -17,6 +17,19 @@
 \details{
   Some useful functions for printing and summarizing results.
 }
+\examples{
+set.seed(123)
+data(IMDb)
+Y <- IMDb$Y/100
+p <- dim(Y)[1]
+T <- dim(Y)[2]
+n <- dim(Y)[3]
+K <- 3
+init <- MatTrans.init(Y, K = K, n.start = 2)
+M <- MatTrans.EM(Y, initial = init, model = "X-VVV-VV", 
+long.iter = 1000, silent = FALSE)
+print.EM(M)
+}
 \seealso{
   \code{MatTrans.EM}.
 }

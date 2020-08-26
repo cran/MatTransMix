@@ -1476,50 +1476,62 @@ double Mstep_Trans_Full(int p, int T, int n, int K, double *misc_double, double 
 		modelA6(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detPsi, trans_type);
 	}
 
-
-
-
-
+	if(trans_type == 0){
+		Q_value0 = 0;
 	
-	if(la_type == 0){
+		for(k=0; k<K; k++){
+			cpyv(gamma, k, n, gamma_k);		
+			cpyk(invS, p, p, k, invSk);		
+			cpyk(invPsi, T, T, k, invPsik);		
+
+			Q_value[k] = Q1(n, p, T, la[k], nu[k], Y, gamma_k, invSk, invPsik, Mu_type, trans_type, la_type);
+			Q_value0 += Q_value[k];
+		}
+	}
+	else if((trans_type == 1) && (la[0][0] == 1)){
+		Q_value0 = 0;
+	
+		for(k=0; k<K; k++){
+			cpyv(gamma, k, n, gamma_k);		
+			cpyk(invS, p, p, k, invSk);		
+			cpyk(invPsi, T, T, k, invPsik);		
+
+			Q_value[k] = Q1(n, p, T, la[k], nu[k], Y, gamma_k, invSk, invPsik, Mu_type, trans_type, la_type);
+			Q_value0 += Q_value[k];
+		}
+	}
+	else if((trans_type == 2) && (la[0][0] == 0)){
+		Q_value0 = 0;
+	
+		for(k=0; k<K; k++){
+			cpyv(gamma, k, n, gamma_k);		
+			cpyk(invS, p, p, k, invSk);		
+			cpyk(invPsi, T, T, k, invPsik);		
+
+			Q_value[k] = Q1(n, p, T, la[k], nu[k], Y, gamma_k, invSk, invPsik, Mu_type, trans_type, la_type);
+			Q_value0 += Q_value[k];
+		}
+	}
+	else if(la_type == 0){
 		Q_value0 = 0;
 	
 		for(k=0; k<K; k++){
 
 			cpyv(gamma, k, n, gamma_k);		
 			cpyk(invS, p, p, k, invSk);		
-			cpyk(invPsi, T, T, k, invPsik);		
+			cpyk(invPsi, T, T, k, invPsik);				
 
+			min_value = simplex1(Q1, n, p, T, nu[k], Y, gamma_k, invSk, invPsik, la[k], eps, 0.1, Mu_type, trans_type, la_type);
 
-			if(trans_type != 0){
-			
-
-				min_value = simplex1(Q1, n, p, T, nu[k], Y, gamma_k, invSk, invPsik, la[k], eps, 0.1, Mu_type, trans_type, la_type);
-
-				Q_value[k] = min_value;
-		
-			} 
-
-
-			else {
-	
-
-				Q_value[k] = Q1(n, p, T, la[k], nu[k], Y, gamma_k, invSk, invPsik, Mu_type, trans_type, la_type);
-
-
-			}
-
+			Q_value[k] = min_value;
 			Q_value0 += Q_value[k];
 		}
 
 	}
-
-
 
 	else if(la_type == 1){
 		Q_value0 = 0;
 
-	
 		for(k=0; k<K; k++){
 				
 
@@ -1527,37 +1539,22 @@ double Mstep_Trans_Full(int p, int T, int n, int K, double *misc_double, double 
 			cpyk(invS, p, p, k, invSk);		
 			cpyk(invPsi, T, T, k, invPsik);		
 
+			double *la_nonzero;
+			MAKE_VECTOR(la_nonzero, 1);
 
-			if(trans_type != 0){
+			la_nonzero[0] = la[k][0];
 
-
-				double *la_nonzero;
-				MAKE_VECTOR(la_nonzero, 1);
-
-				la_nonzero[0] = la[k][0];
-
-				min_value = simplex1(Q1_same, n, p, T, nu[k], Y, gamma_k, invSk, invPsik, la_nonzero, eps, 0.1, Mu_type, trans_type, la_type);
+			min_value = simplex1(Q1_same, n, p, T, nu[k], Y, gamma_k, invSk, invPsik, la_nonzero, eps, 0.1, Mu_type, trans_type, la_type);
 				
+			for(j=0; j<p; j++){
 
-				for(j=0; j<p; j++){
-
-					la[k][j] = la_nonzero[0];
+				la[k][j] = la_nonzero[0];
 						
-				}		
+			}		
 	
-				FREE_VECTOR(la_nonzero);
+			FREE_VECTOR(la_nonzero);
 
-				Q_value[k] = min_value;
-		
-			} 
-
-
-			else {
-
-				Q_value[k] = Q1(n, p, T, la[k], nu[k], Y, gamma_k, invSk, invPsik, Mu_type, trans_type, la_type);
-
-			}
-
+			Q_value[k] = min_value;
 			Q_value0 += Q_value[k];
 		}
 
@@ -1565,38 +1562,65 @@ double Mstep_Trans_Full(int p, int T, int n, int K, double *misc_double, double 
 
 
 
-
-	Q_value0 = 0;
 	
-	for(k=0; k<K; k++){
-			
-		cpyv(gamma, k, n, gamma_k);		
-			
-		cpyk(invS, p, p, k, invSk);		
-		cpyk(invPsi, T, T, k, invPsik);		
 
-		if(trans_type != 0){
 
+	if(trans_type == 0){
+		Q_value0 = 0;
+	
+		for(k=0; k<K; k++){
+			cpyv(gamma, k, n, gamma_k);		
+			cpyk(invS, p, p, k, invSk);		
+			cpyk(invPsi, T, T, k, invPsik);		
+
+			Q_value[k] = Q2(n, p, T, nu[k], la[k], Y, gamma_k, invSk, invPsik, Mu_type, trans_type);
+			Q_value0 += Q_value[k];
+		}
+	}
+	else if((trans_type == 1) && (nu[0][0] == 1)){
+		Q_value0 = 0;
+	
+		for(k=0; k<K; k++){
+			cpyv(gamma, k, n, gamma_k);		
+			cpyk(invS, p, p, k, invSk);		
+			cpyk(invPsi, T, T, k, invPsik);		
+
+			Q_value[k] = Q2(n, p, T, nu[k], la[k], Y, gamma_k, invSk, invPsik, Mu_type, trans_type);
+			Q_value0 += Q_value[k];
+		}
+
+
+	}
+	else if((trans_type == 2) && (nu[0][0] == 0)){
+		Q_value0 = 0;
+	
+		for(k=0; k<K; k++){
+			cpyv(gamma, k, n, gamma_k);		
+			cpyk(invS, p, p, k, invSk);		
+			cpyk(invPsi, T, T, k, invPsik);		
+
+			Q_value[k] = Q2(n, p, T, nu[k], la[k], Y, gamma_k, invSk, invPsik, Mu_type, trans_type);
+			Q_value0 += Q_value[k];
+		}
+
+
+	}
+	else{
+		Q_value0 = 0;
+	
+		for(k=0; k<K; k++){
+			cpyv(gamma, k, n, gamma_k);		
+			cpyk(invS, p, p, k, invSk);		
+			cpyk(invPsi, T, T, k, invPsik);		
 
 			min_value = simplex2(Q2, n, p, T, la[k], Y, gamma_k, invSk, invPsik, nu[k], eps, 0.1, Mu_type, trans_type);
 
 			Q_value[k] = min_value;
-		
-		} 
-
-
-		else {
-
-			Q_value[k] = Q2(n, p, T, nu[k], la[k], Y, gamma_k, invSk, invPsik, Mu_type, trans_type);
-
+			Q_value0 += Q_value[k];
 		}
 
-		Q_value0 += Q_value[k];
 
 	}
-
-
-
 
 
 

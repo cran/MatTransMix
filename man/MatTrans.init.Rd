@@ -19,6 +19,16 @@ MatTrans.init(Y, K, n.start = 10, scale = 1)
 Random starts are used to obtain different starting values. The number of clusters, the skewness parameters, and number of random starts need to be specified. In the case when transformation parameters are not provided, the function runs the EM algorithm without any transformations, i.e., it is equivalent to the EM algorithm for a matrix Gaussian mixture.
 Notation: n - sample size, p x T - dimensionality of the random matrices, K - number of mixture components. 
 }
+\examples{
+set.seed(123)
+data(crime)
+Y <- crime$Y[c(2,7),,] / 1000
+p <- dim(Y)[1]
+T <- dim(Y)[2]
+n <- dim(Y)[3]
+K <- 2
+init <- MatTrans.init(Y, K = K, n.start = 2)
+}
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{ Initialization }% __ONLY ONE__ keyword per line

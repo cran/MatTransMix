@@ -70,29 +70,29 @@ MatTrans.init <- function(Y, K, n.start = 10, scale = 1){
 		W.result <- NULL
 
 		iif <- 0
+
 		for (k in 1:K){
 			index <- PI[,k] == 1
 
-			iif_3 <- 0
 
-			if(p>1){
-				if(T>1){
-					iff_3 <- 1
-				}
+			iif3 <- 0
+
+			if((p>1) && (T>1)){
+				iif3 <- 1
 			}
-
-			iif_4 <- 0
-
-			if(p==1){
-				if(T>1){
-					iff_4 <- 1
-				}
-			}
-
-			if(iff_3 == 1){
+			
+			iif4 <- 0
+			
+			if((p==1) && (T>1)){iif4 <- 1}
+			
+			
+			B <- NULL
+			C <- NULL
+		
+			if(iif3 == 1){
 				var.est <- apply(Y[,,index], 2, as.matrix, byrow = TRUE)
 				var.est <- var(var.est)
-				A <- try(Psi.inv[,,k] <- solve(var.est))
+				C <- try(Psi.inv[,,k] <- solve(var.est))
 				detPsi[k] <- 1/det(Psi.inv[,,k])
 				var.est <- apply(Y[,,index], 1, as.matrix, byrow = TRUE)
 				var.est <- var(var.est)
@@ -100,9 +100,9 @@ MatTrans.init <- function(Y, K, n.start = 10, scale = 1){
 				detS[k] <- 1/det(Sigma.inv[,,k])
 
 			}
-			if(iif_4 == 1){
+			if(iif4 == 1){
 				var.est <- var(t(Y[,,index]))
-				A <- try(Psi.inv[,,k] <- solve(var.est))
+				C <- try(Psi.inv[,,k] <- solve(var.est))
 				detPsi[k] <- 1/(Psi.inv[,,k])
 				var.est <- var(as.vector(Y[,,index]))
 				B <- try(Sigma.inv[,,k] <- solve(var.est))
@@ -110,15 +110,22 @@ MatTrans.init <- function(Y, K, n.start = 10, scale = 1){
 			}
 			if(T == 1){
 				var.est <- var(as.vector(Y[,,index]))
-				A <- try(Psi.inv[,,k] <- solve(var.est))
+				C <- try(Psi.inv[,,k] <- solve(var.est))
 				detPsi[k] <- 1/(Psi.inv[,,k])
 				var.est <- var(t(Y[,,index]))
 				B <- try(Sigma.inv[,,k] <- solve(var.est))
 				detS[k] <- 1/det(Sigma.inv[,,k])
 
 			}
-			if(class(A) == "try-error"){iif <- 1}	
-			if(class(B) == "try-error"){iif <- 1}
+			
+			if(inherits(C, "try-error")){
+				
+				iif <- 1
+			}	
+			if(inherits(B, "try-error")){
+				
+				iif <- 1
+			}
 		}
 		if(iif == 0){
 			W.result$y <- as.vector(Y)				
@@ -223,7 +230,7 @@ code.back <- function(num){
 
 
 
-MatTrans.EM.orig <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NULL, trans = "Gaussian", la.type = 0, tol = 1e-05, max.iter = 1000, size.control = 0, silent = TRUE){
+MatTrans.EM.orig <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NULL, trans = "None", la.type = 0, row.skew = TRUE, col.skew = TRUE, tol = 1e-05, max.iter = 1000, size.control = 0, silent = TRUE, check = TRUE){
 
 	A <- dim(Y)
 	p <- A[1]
@@ -240,26 +247,59 @@ MatTrans.EM.orig <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NU
 		if(length(initial) < 1) stop("Wrong initialization...\n")
 
 		K <- length(initial[[1]]$tau)
+
+		if(trans != "None"){
+			if((row.skew == FALSE) && (col.skew == FALSE)){
+				trans <- "None"
+				cat("No row skewness or column skewness: trans method is set to 'None' \n")
+			}
+
+			else if(row.skew == FALSE){
+				if(trans == "Power"){
+					la <- matrix(1, K, p)
+					cat("No row skewness lambda -- 1 \n")
+				}
+				else if(trans == "Manly"){
+					la <- matrix(0, K, p)
+					cat("No row skewness lambda -- 0 \n")
+				}
+			}
+			else if(col.skew == FALSE){
+				if(trans == "Power"){
+					nu <- matrix(1, K, T)
+					cat("No column skewness nu -- 1 \n")
+				}
+				else if(trans == "Manly"){
+					nu <- matrix(0, K, T)
+					cat("No column skewness nu -- 0 \n")
+				}
+			}
+		}
+
 		if(is.null(la)){
-			if(trans != "Gaussian"){
+			if(trans != "None"){
 				la <- matrix(0.5, K, p)
 				cat("Initial lambda -- 0.5 \n")
 			}
 		}
 		if(is.null(nu)){
-			if(trans != "Gaussian"){
+			if(trans != "None"){
 				nu <- matrix(0.5, K, T)
 				cat("Initial nu -- 0.5 \n")
 			}
 		}
 		if(la.type == 0){
-			if(trans != "Gaussian"){
-				cat("Unrestricted lambda type \n")
+			if(trans != "None"){
+				if(row.skew){
+					cat("Unrestricted lambda type \n")
+				}
 			}
 		}
 		if(la.type == 1){
-			if(trans != "Gaussian"){
-				cat("Lambda same across all variables \n")
+			if(trans != "None"){
+				if(row.skew){
+					cat("Lambda same across all variables \n")
+				}
 			}
 		}
 
@@ -272,7 +312,7 @@ MatTrans.EM.orig <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NU
 			for(Mu.type in 1:2){
 				for(Sigma.type in 1:14){
 					for(Psi.type in 1:7){
-															iter <- iter + 1
+																	iter <- iter + 1
 						Model[iter] <- paste(code.back(c(Mu.type, Sigma.type, Psi.type))$Mu, "-", code.back(c(Mu.type, Sigma.type, Psi.type))$Sigma, "-", code.back(c(Mu.type, Sigma.type, Psi.type))$Psi, sep="")
 								
 						index[,iter] <- c(Mu.type, Sigma.type, Psi.type)
@@ -348,9 +388,12 @@ MatTrans.EM.orig <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NU
 			cat("Manly transformation \n")
 
 		}
-		else if(trans == "Gaussian"){
+		else if(trans == "None"){
 			trans.type <- 0
-			cat("Gaussian -- no transformation \n")
+			cat("None -- no transformation \n")
+			if(row.skew || col.skew){
+				cat("trans method is set to 'None' -- row.skew and col.skew are set to FALSE \n") 
+			}
 
 		}
 
@@ -381,7 +424,7 @@ MatTrans.EM.orig <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NU
 					
 
 				}
-				else if(trans == "Gaussian"){
+				else if(trans == "None"){
 					trans.type <- 0
 					
 				}
@@ -393,7 +436,7 @@ MatTrans.EM.orig <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NU
 
 				try0 <- try(temp <- .C("run_Mat_Trans_Full", y = as.double(initial[[i]]$y), misc_int = as.integer(misc_int), misc_double = as.double(misc_double), tau = as.double(initial[[i]]$tau), la1 = as.double(as.vector(la)), nu1 = as.double(as.vector(nu)), Mu1 = as.double(initial[[i]]$Mu1), invS1 = as.double(initial[[i]]$invS1), invPsi1 = as.double(initial[[i]]$invPsi1), detS = as.double(initial[[i]]$detS), detPsi = as.double(initial[[i]]$detPsi), gamma1 = as.double(initial[[i]]$gamma1), id = as.integer(id), ll = as.double(ll), conv = as.integer(conv), scale = as.double(initial[[i]]$scale), PACKAGE = "MatTransMix"), silent = TRUE)
 				
-				#cat("try0", class(try0), "\n")			 
+					 
 
 				try1 <- try(invS <- array(temp$invS1, dim = c(p, p, K)))
 				try2 <- try(invPsi <- array(temp$invPsi1, dim = c(T, T, K)))
@@ -403,73 +446,70 @@ MatTrans.EM.orig <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NU
 
 				iif_0 <- 0
 		
-				if(class(try0) != "try-error"){
-					if(class(try1) != "try-error"){
-						if(class(try2) != "try-error"){
-							iif_0 <- 1
-
-						}
-					}
-
+				if(inherits(try0, "try-error")){	
+					iif_0 <- 1
 				}
 		
+				if(inherits(try1, "try-error")){
+					iif_0 <- 1
+				}
+				if(inherits(try2, "try-error")){
+					iif_0 <- 1
+				}
 
-				if (iif_0 == 1){
+				if (iif_0 != 1){
 
 					if(silent != TRUE){
 																	cat("Model", Model[iter], "BIC", temp$ll[2],"\n")
 																											}
 					if(!is.na(temp$ll[1])){	
-						
-						if(temp$ll[1] > loglik[iter]){
-						if(class(try3) != "try-error"){
-						if(class(try4) != "try-error"){
-						if(temp$conv[2] != 1){
+					if(temp$ll[1] > loglik[iter]){
+					if((!inherits(try3, "try-error")) && (!inherits(try4, "try-error"))){
+						if(check == TRUE){
+							check1 <- all(table(temp$id) > size.control)
+							check2 <- length(table(temp$id))==K
+							check3 <- temp$conv[2] != 1
+							if(check1 && check2 && check3){
 
-						check1 <- all(table(temp$id) > size.control)
-						check2 <- length(table(temp$id))==K
-						if(check1 && check2){
-
-							loglik[iter] <- temp$ll[1]	
-							bic[iter] <- temp$ll[2]
-											
-							r <- NULL
-						
-							r$tau <- temp$tau
-							if(trans.type != 0){
-								r$la <- matrix(temp$la1, nrow = K)
-								r$nu <- matrix(temp$nu1, nrow = K)
-								r$LA <- array(NA, dim = c(p, T, K))
-								for(k in 1:K){
+								loglik[iter] <- temp$ll[1]
+								bic[iter] <- temp$ll[2]				
+								r <- NULL	
+								r$tau <- temp$tau
+								if(trans.type != 0){
+									r$la <- matrix(temp$la1, nrow = K)
+									r$nu <- matrix(temp$nu1, nrow = K)
+									r$LA <- array(NA, dim = c(p, T, K))
+									for(k in 1:K){
 									for(j in 1:p){
-										for(t in 1:T){
-											r$LA[j,t,k] <- r$la[k,j] + r$nu[k,t]
-										}
+									for(t in 1:T){
+																				r$LA[j,t,k] <- r$la[k,j] + r$nu[k,t]
+									}
+									}
 									}
 								}
-							}
-							else{
-								r$la <- NA
-								r$nu <- NA
-								r$LA <- NA
+						
+								else{
+									r$la <- NA
+									r$nu <- NA
+									r$LA <- NA
 
-							}
-							r$Sigma <- Sigma
-							r$Psi <- Psi
-							r$detS <- temp$detS
-							r$detPsi <- temp$detPsi
-							r$Mu <- array(temp$Mu1, dim = c(p, T, K))
-							r$gamma <- matrix(temp$gamma1, nrow = n)
-							r$iter <- temp$conv[1]
-							r$pars <- temp$conv[3]
+								}
+								r$Sigma <- Sigma
+								r$Psi <- Psi
+								r$detS <- temp$detS
+								r$detPsi <- temp$detPsi
+								r$Mu <- array(temp$Mu1, dim = c(p, T, K))
+								r$gamma <- matrix(temp$gamma1, nrow = n)
+								r$iter <- temp$conv[1]
+								r$pars <- temp$conv[3]
 
-							r$id <- temp$id
-							r$flag <- temp$conv[2]
-							r$ll <- temp$ll[1]
-							r$bic <- temp$ll[2]
+								r$id <- temp$id
+								r$flag <- temp$conv[2]
+								r$ll <- temp$ll[1]
+								r$bic <- temp$ll[2]
 							
-							result[[iter]] <- r
-						}
+								result[[iter]] <- r
+							}
 						}
 						else{
 							loglik[iter] <- temp$ll[1]	
@@ -483,11 +523,11 @@ MatTrans.EM.orig <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NU
 								r$nu <- matrix(temp$nu1, nrow = K)
 								r$LA <- array(NA, dim = c(p, T, K))
 								for(k in 1:K){
-									for(j in 1:p){
-										for(t in 1:T){
-											r$LA[j,t,k] <- r$la[k,j] + r$nu[k,t]
-										}
-									}
+								for(j in 1:p){
+								for(t in 1:T){
+								r$LA[j,t,k] <- r$la[k,j] + r$nu[k,t]
+								}
+								}
 								}
 							}
 							else{
@@ -514,12 +554,38 @@ MatTrans.EM.orig <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NU
 
 
 						}
+											
+						if(trans.type == 2){
+
+							adj <- cdf.adjust(K, r$Mu, r$Sigma, r$Psi, r$la, r$nu)
+
+							
+							ll.new <- 0
+
+							for(obs in 1:n){
+								dens <- 0
+								for(k in 1:K){
+									dens <- dens + r$tau[k] * manly.dens(as.matrix(Y[,,obs], p, T), r$Mu[,,k], r$detS[k], r$detPsi[k], invS[,,k], invPsi[,,k], r$LA[,,k]) /adj[k]
+									
+								}
+								ll.new <- ll.new + log(dens)
+							}
+
+							
+							result[[iter]]$ll <- ll.new
+							M <- (r$bic + 2*r$ll) / log(n)
+							result[[iter]]$bic <- M *log(n) -2 *result[[iter]]$ll
+
+							loglik[iter] <- ll.new	
+							bic[iter] <- result[[iter]]$bic					
+						}
+
 
 						
-						}	
-						}
-						}
+					}	
 					}
+					}
+					
 
 				}
 
@@ -703,18 +769,18 @@ check.Mu <- function(A){
 
 
 
-MatTrans.EM <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NULL, trans = "Gaussian", la.type = 0, tol = 1e-05, short.iter = NULL, long.iter = 1000, all.models = TRUE, size.control = 0, silent = TRUE){
+MatTrans.EM <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NULL, trans = "None", la.type = 0, row.skew = TRUE, col.skew = TRUE, tol = 1e-05, short.iter = NULL, long.iter = 1000, all.models = TRUE, size.control = 0, silent = TRUE){
 
 	if(is.null(short.iter)){
 
-		ret <- MatTrans.EM.orig(Y, initial = init, la = la, nu = nu, model = model, trans = trans, la.type = la.type, tol = tol, max.iter = long.iter, size.control = size.control, silent = silent)	
+		ret <- MatTrans.EM.orig(Y, initial = initial, la = la, nu = nu, model = model, trans = trans, la.type = la.type, row.skew = row.skew, col.skew = col.skew, tol = tol, max.iter = long.iter, size.control = size.control, silent = silent, check = TRUE)	
 		class(ret) <- "MatTransMix"
 
 	}
 	else{
 		cat("Short EM has been started", "\n")
 
-		shortEM <- MatTrans.EM.orig(Y, initial = initial, la = la, nu = nu, model = model, trans = trans, la.type = la.type, tol = tol, max.iter = short.iter, size.control = size.control, silent = silent)
+		shortEM <- MatTrans.EM.orig(Y, initial = initial, la = la, nu = nu, model = model, trans = trans, la.type = la.type, row.skew = row.skew, col.skew = col.skew, tol = tol, max.iter = short.iter, size.control = size.control, silent = silent, check = FALSE)
 
 
 		cat("Long EM has been started", "\n")
@@ -737,13 +803,13 @@ MatTrans.EM <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NULL, t
 	
 			init[[1]] <- W.result	
 		
-			if(trans != "Gaussian"){
+			if(trans != "None"){
 
-				longEM <- MatTrans.EM.orig(Y, initial = init, la = shortEM$best.result[[1]]$la, nu = shortEM$best.result[[1]]$nu, model = shortEM$best.model, trans = shortEM$trans, la.type = la.type, tol = tol, max.iter = long.iter, size.control = size.control, silent = silent)
+				longEM <- MatTrans.EM.orig(Y, initial = init, la = shortEM$best.result[[1]]$la, nu = shortEM$best.result[[1]]$nu, model = shortEM$best.model, trans = shortEM$trans, la.type = la.type, row.skew = row.skew, col.skew = col.skew, tol = tol, max.iter = long.iter, size.control = size.control, silent = silent, check = TRUE)
 			}
 			else{
 
-				longEM <- MatTrans.EM.orig(Y, initial = init, la = NULL, nu = NULL, model = shortEM$best.model, trans = shortEM$trans, la.type = la.type, tol = tol, max.iter = long.iter, size.control = size.control, silent = silent)
+				longEM <- MatTrans.EM.orig(Y, initial = init, la = NULL, nu = NULL, model = shortEM$best.model, trans = shortEM$trans, la.type = la.type, row.skew = row.skew, col.skew = col.skew, tol = tol, max.iter = long.iter, size.control = size.control, silent = silent, check = TRUE)
 
 			}
 			ret <- longEM
@@ -784,14 +850,14 @@ MatTrans.EM <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NULL, t
 				#cat(W.result$gamma1, "\n")
 				init[[1]] <- W.result	
 				
-				if(trans != "Gaussian"){
+				if(trans != "None"){
 
-					try0 <- try(longEM$result[[i]] <- MatTrans.EM.orig(Y, initial = init, la = shortEM$result[[i]]$la, nu = shortEM$result[[i]]$nu, model = shortEM$model[i], trans = shortEM$trans, la.type = la.type, tol = tol, max.iter = long.iter, size.control = size.control, silent = silent)$result[[1]])
+					try0 <- try(longEM$result[[i]] <- MatTrans.EM.orig(Y, initial = init, la = shortEM$result[[i]]$la, nu = shortEM$result[[i]]$nu, model = shortEM$model[i], trans = shortEM$trans, la.type = la.type, row.skew = row.skew, col.skew = col.skew, tol = tol, max.iter = long.iter, size.control = size.control, silent = silent, check = TRUE)$result[[1]])
 
 				}
 				else{
 
-					try0 <- try(longEM$result[[i]] <- MatTrans.EM.orig(Y, initial = init, la = NULL, nu = NULL, model = shortEM$model[i], trans = shortEM$trans, la.type = la.type, tol = tol, max.iter = long.iter, size.control = size.control, silent = silent)$result[[1]])
+					try0 <- try(longEM$result[[i]] <- MatTrans.EM.orig(Y, initial = init, la = NULL, nu = NULL, model = shortEM$model[i], trans = shortEM$trans, la.type = la.type, row.skew = row.skew, col.skew = col.skew, tol = tol, max.iter = long.iter, size.control = size.control, silent = silent, check = TRUE)$result[[1]])
 
 
 				}
@@ -825,5 +891,59 @@ MatTrans.EM <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NULL, t
 }
 
 
+Manly.transX <- function(X, LA){
 
+	y <- X
+
+
+	y <- X * LA
+	y <- exp(y) - 1
+	y <- y / LA
+
+	return(y)
+
+}
+
+
+
+
+manly.dens <- function(X, Mu, detS, detPsi, invS, invPsi, LA){
+	p <- dim(X)[1]
+	T <- dim(X)[2]
+	y <- Manly.transX(X, LA)
+
+	maha <- invS %*% (y - Mu) %*% invPsi %*% t(y - Mu)
+
+	trace <- sum(diag(maha))		
+
+	res <- 1.0 / (2*pi)^(p*T/2) / detS^(T/2) / detPsi^(p/2) * exp(-1.0 / 2.0 * trace) * exp(sum(LA * X));
+
+	return(res)
+}
+
+
+
+
+cdf.adjust <- function(K, Mu, Sigma, Psi, la, nu){
+  p <- ncol(la)
+  q <- ncol(nu)
+  vec.Mu <- matrix(NA, nrow = K, ncol = (p*q))
+  covar <- array(NA, dim = c((p*q), (p*q), K))
+  skew <- matrix(NA, nrow = K, ncol = (p*q))
+  cdfAdjust <- rep(NA, K)
+  for (k in 1:K){
+    vec.Mu[k, ] <- as.vector(Mu[ , , k])
+    covar[ , , k] <- Psi[ , , k]%x%Sigma[ , , k]
+    ctr <- 0
+    for (j in 1:q){
+      for (i in 1:p){
+        ctr <- ctr + 1
+        skew[k,ctr] <- la[k,i] + nu[k,j]
+      }
+    }
+    cdf <- pmvnorm(upper = (-1/skew[k,]), mean = vec.Mu[k,], sigma = covar[ , , k])
+    cdfAdjust[k] <- ifelse(cdf > 0.5, cdf, (1-cdf))
+  }
+  return(cdfAdjust)
+}
 

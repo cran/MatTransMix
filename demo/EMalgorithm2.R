@@ -16,7 +16,7 @@ Manly <- MatTrans.EM(X, initial = initial, la.type = 1, trans = "Manly", max.ite
 
 Power <- MatTrans.EM(X, initial = initial, la.type = 1, trans = "Power", max.iter = 1000, model = "X-EVI-EI", silent = FALSE)
 
-Gauss <- MatTrans.EM(X, initial = initial, trans = "Gaussian", max.iter = 1000, model = "A-XXX-EI", silent = FALSE)
+Gauss <- MatTrans.EM(X, initial = initial, trans = "None", max.iter = 1000, model = "A-XXX-EI", silent = FALSE)
 
 
 

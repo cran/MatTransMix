@@ -19,7 +19,7 @@ Manly <- MatTrans.EM(X, initial = initial, la.type = 0, trans = "Manly", la = ma
 
 Power <- MatTrans.EM(X, initial = initial, la.type = 0, trans = "Power", la = matrix(0.9, K, p), nu = matrix(0.9, K, T), silent = FALSE)
 
-Gauss <- MatTrans.EM(X, initial = initial, la.type = 0, trans = "Gaussian", silent = FALSE)
+Gauss <- MatTrans.EM(X, initial = initial, la.type = 0, trans = "None", silent = FALSE)
 
 print.EM(Manly)
 print.EM(Power)

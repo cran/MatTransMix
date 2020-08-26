@@ -1,5 +1,7 @@
 useDynLib(MatTransMix, .registration = TRUE)
 importFrom("stats", "var")
+importFrom("mvtnorm", "pmvnorm")
+
 export(MatTrans.EM)
 export(MatTrans.init)
 export(print.EM)
