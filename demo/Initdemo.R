@@ -14,3 +14,5 @@ n <- dim(Y)[3]
 K <- 2
 
 init <- MatTrans.init(Y, K = K, n.start = 2)
+
+init[[1]]

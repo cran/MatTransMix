@@ -17,9 +17,13 @@ for(i in 1:n){
 K <- 3
 init <- MatTrans.init(X, K = K, n.start = 10)
 
-Trans <- MatTrans.EM(X, initial = init, model = "G-VVV-VV",
-                    row.skew = TRUE, col.skew = TRUE,
-                    trans = "Manly", silent = FALSE)
+M <- MatTrans.EM(X, initial = init, model = "G-VVV-VV",
+  row.skew = TRUE, col.skew = TRUE,
+  trans = "Manly", silent = FALSE)
+
+print.EM(M)
+
+table(iris[,5], M$best.result[[1]]$id)
 
 
 

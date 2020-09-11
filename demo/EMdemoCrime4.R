@@ -17,8 +17,25 @@ init <- MatTrans.init(Y, K = K, n.start = 2)
 
 
 M <- MatTrans.EM(Y, initial = init, la = matrix(1.1,K,p),
-                 nu = matrix(1.1,K,T), model = "A-EVE-XX", trans = "Power")
+  nu = matrix(1.1,K,T), model = "A-EVE-XX", trans = "Power")
 
+M$result[[1]]
+
+M$model
+
+M$loglik
+
+M$bic
+
+M$best.model
+
+M$best.loglik
+
+M$best.bicM$trans
+
+print.EM(M)
+
+summary.EM(M)
 
 
 

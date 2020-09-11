@@ -16,8 +16,16 @@ K <- 2
 init <- MatTrans.init(Y, K = K, n.start = 2)
 
 M <- MatTrans.EM(Y, initial = init,
-                 la = matrix(1.1,K,p), nu = matrix(1.1,K,T), la.type = 1,
-                 model = "A-EVE-VV", trans = "Power")
+  la = matrix(1.1,K,p), nu = matrix(1.1,K,T), la.type = 1,
+  model = "A-EVE-VV", trans = "Power")
+
+M$best.result[[1]]$la
+
+M$best.result[[1]]$nu
+
+M$best.loglik
+
+M$best.bic
 
 
 
