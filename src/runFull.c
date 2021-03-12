@@ -2,7 +2,7 @@
 #include "array.h"
 #include "MatTransMix.h"
 
-void run_Mat_Trans_Full(double *y, int *misc_int, double *misc_double, double *tau, double *la1, double *nu1, double *Mu1, double *invS1, double *invPsi1, double *detS, double *detPsi, double *gamma1, int *id, double *ll, int *conv, double scale){
+void run_Mat_Trans_Full(double *y, int *misc_int, double *misc_double, double *tau, double *la1, double *nu1, double *Mu1, double *invS1, double *invPsi1, double *detS, double *detPsi, double *gamma1, int *id, double *ll, int *conv, double *scale){
 		
 	double ***Y, **la, **nu, ***Mu, ***invS, ***invPsi, **gamma;
 

@@ -34,4 +34,3 @@ M$best.loglik
 M$best.bic
 
 M$trans
-

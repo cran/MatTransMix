@@ -282,7 +282,7 @@ double mGpdf_Trans_Full(int p, int T, double *la, double *nu, double **Y, double
 
 
 
-double mGloglik_Trans_Full(int p, int T, int n, int K, double ***Y, double **la, double **nu, double *tau, double ***Mu, double ***invS, double ***invPsi, double *detS, double *detPsi, double scale, int trans_type){
+double mGloglik_Trans_Full(int p, int T, int n, int K, double ***Y, double **la, double **nu, double *tau, double ***Mu, double ***invS, double ***invPsi, double *detS, double *detPsi, double *scale, int trans_type){
 
 	int i,k,j1,j2,j,t;
 	double loglik = 0.0;
@@ -312,7 +312,7 @@ double mGloglik_Trans_Full(int p, int T, int n, int K, double ***Y, double **la,
 
 			for(j=0; j<p; j++){
 				for(t=0; t<T; t++){
-					Yi_new[j][t] = Yi[j][t] * scale;
+					Yi_new[j][t] = Yi[j][t] * scale[0];
  			
 				}
 			}
@@ -320,29 +320,29 @@ double mGloglik_Trans_Full(int p, int T, int n, int K, double ***Y, double **la,
 			
 			for(j=0; j<p; j++){
 				for(t=0; t<T; t++){
-					Muk_new[j][t] = Muk[j][t] * scale;
+					Muk_new[j][t] = Muk[j][t] * scale[0];
  			
 				}
 			}
 			
 			for(j1=0; j1<p; j1++){
 				for(j2=0; j2<p; j2++){
-					invSk_new[j1][j2] = invSk[j1][j2] / pow(scale, 2.0);
+					invSk_new[j1][j2] = invSk[j1][j2] / pow(scale[0], 2.0);
  			
 				}
 			}
 
 			for(j=0; j<p; j++){
-				la_new[j] = la[k][j]/scale;
+				la_new[j] = la[k][j];
 
 			}
 			for(t=0; t<T; t++){
-				nu_new[t] = nu[k][t]/scale;
+				nu_new[t] = nu[k][t];
 
 			}
-			dens = mGpdf_Trans_Full(p, T, la_new, nu_new, Yi_new, Muk_new, invSk_new, invPsik, detS[k]*pow(scale, 2.0*p), detPsi[k], trans_type);
+			dens = mGpdf_Trans_Full(p, T, la_new, nu_new, Yi_new, Muk_new, invSk_new, invPsik, detS[k]*pow(scale[0], 2.0*p), detPsi[k], trans_type);
 
-
+			
 			ll += tau[k] * dens;
 
 
@@ -350,6 +350,7 @@ double mGloglik_Trans_Full(int p, int T, int n, int K, double ***Y, double **la,
 
 		loglik += log(ll);
 	}
+	//printf(" scale %lf  %lf \n", scale[0], loglik);
 
 	FREE_VECTOR(la_new);
 	FREE_VECTOR(nu_new);
@@ -1657,13 +1658,15 @@ double Mstep_Trans_Full(int p, int T, int n, int K, double *misc_double, double 
 
 
 
-void EM_Trans_Full(int p, int T, int n, int K, double ***Y, double **la, double **nu, int max_iter, double *misc_double, double *tau, double ***Mu, double ***invS, double ***invPsi, double *detS, double *detPsi, double **gamma, int *id, double *ll, int *conv, int Mu_type, int Sigma_type, int Psi_type, int la_type, double scale, int trans_type){
+void EM_Trans_Full(int p, int T, int n, int K, double ***Y, double **la, double **nu, int max_iter, double *misc_double, double *tau, double ***Mu, double ***invS, double ***invPsi, double *detS, double *detPsi, double **gamma, int *id, double *ll, int *conv, int Mu_type, int Sigma_type, int Psi_type, int la_type, double *scale, int trans_type){
 	int i,k,iter,M = 0;
 	double eps,loglik_old,loglik = 0.0,max;
 
  	eps = misc_double[0];
 	loglik_old = -INFINITY;
 	iter = 0;
+//printf(" scale %lf \n", scale[0]);
+
 
 	do{
 		loglik = loglik_old; 
@@ -1679,7 +1682,7 @@ void EM_Trans_Full(int p, int T, int n, int K, double ***Y, double **la, double 
 
 
 		
- 		loglik_old = mGloglik_Trans_Full(p, T, n, K, Y, la, nu, tau, Mu, invS, invPsi, detS, detPsi, 1.0, trans_type);
+ 		loglik_old = mGloglik_Trans_Full(p, T, n, K, Y, la, nu, tau, Mu, invS, invPsi, detS, detPsi, scale, trans_type);
 		
 					
 	}
@@ -1688,7 +1691,7 @@ void EM_Trans_Full(int p, int T, int n, int K, double ***Y, double **la, double 
 
 
 
-	ll[0] = mGloglik_Trans_Full(p, T, n, K, Y, la, nu, tau, Mu, invS, invPsi, detS, detPsi, 1.0, trans_type);
+	ll[0] = mGloglik_Trans_Full(p, T, n, K, Y, la, nu, tau, Mu, invS, invPsi, detS, detPsi, scale, trans_type);
 
 	M += K-1;
 
@@ -1706,17 +1709,19 @@ void EM_Trans_Full(int p, int T, int n, int K, double ***Y, double **la, double 
 	else if(Sigma_type == 9){M += 1+K*(p-1)+p*(p-1)/2;}
 	else if(Sigma_type == 10){M += K*p+p*(p-1)/K;}
 	else if(Sigma_type == 11){M += p+K*p*(p-1)/2;}
-	else if(Sigma_type == 12){M += K+p-1+p*(p-1)/2;}
+	else if(Sigma_type == 12){M += K+p-1+K*p*(p-1)/2;}
 	else if(Sigma_type == 13){M += 1+K*(p*(p+1)/2-1);}
 	else if(Sigma_type == 14){M += K*p*(p+1)/2;}
 
-	if(Psi_type == 1){M += T-1;}
-	else if(Psi_type == 2){M += K*(T-1);}
-	else if(Psi_type == 3){M += T*(T+1)/2-1;}
-	else if(Psi_type == 4){M += (T-1)*(K+T/2);}
-	else if(Psi_type == 5){M += (T-1)*(1+K*T/2);}
-	else if(Psi_type == 6){M += K*T*(T+1)/2-K;}
+	if(Psi_type == 2){M += T-1;}
+	else if(Psi_type == 3){M += K*(T-1);}
+	else if(Psi_type == 4){M += T*(T+1)/2-1;}
+	else if(Psi_type == 5){M += (T-1)*(K+T/2);}
+	else if(Psi_type == 6){M += (T-1)*(1+K*T/2);}
+	else if(Psi_type == 7){M += K*T*(T+1)/2-K;}
 	
+
+	//printf(" pars  %d %d %d %d %d %d %d\n", p, K, T, Mu_type, Sigma_type, Psi_type, M);
 
 	if(trans_type != 0){
 		if(la_type == 1){M += K+K*(T-1);}

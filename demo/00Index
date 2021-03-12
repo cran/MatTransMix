@@ -9,5 +9,6 @@ EMdemoCrime4		MatTransMix	EM example 4 for Crime data
 EMdemoIMDb1		MatTransMix	EM example 1 for IMDb data
 EMdemoIMDb2		MatTransMix	EM example 2 for IMDb data
 EMdemoIMDb3		MatTransMix	EM example 3 for IMDb data
-EMdemoIris		MatTransMix	EM example for Iris data
-
+EMdemoIris1		MatTransMix	EM example 1 for Iris data
+EMdemoIris2		MatTransMix	EM example 2 for Iris data
+EMdemoIris3		MatTransMix	EM example 3 for Iris data

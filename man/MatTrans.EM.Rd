@@ -48,6 +48,7 @@ Runs the EM algorithm for modeling and clustering matrices for a provided datase
  The last 2-digit 'XX' specifies the variance-covariance Psi. There are 7 options including II, EI, VI, EE, VE, EV, VV. The user can specify the 'model' to be for example 'X-VVV-EV', then both 'G' and 'A' mean structures will be fitted while Sigma and Psi are fixed at 'VVV' and 'EV', respectively. Similarly, 'model' can be specified as 'G-XXX-EV' or 'G-VVV-XX' for selection of Sigma and Psi structures.
 }
 \value{
+  \item{scale }{ scale parameter set by the user}
   \item{result }{ parsimonious models}
   \item{model }{ model types}
   \item{loglik }{ log likelihood values}
@@ -56,6 +57,7 @@ Runs the EM algorithm for modeling and clustering matrices for a provided datase
   \item{best.model }{ best model type}
   \item{best.loglik }{ best logliklihood}
   \item{best.bic }{ best bic}
+  \item{trans }{ transformation type}
 }
 \examples{
 set.seed(123)

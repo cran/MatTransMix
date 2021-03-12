@@ -249,6 +249,7 @@ MatTrans.EM.orig <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NU
 		K <- length(initial[[1]]$tau)
 
 		if(trans != "None"){
+
 			if((row.skew == FALSE) && (col.skew == FALSE)){
 				trans <- "None"
 				cat("No row skewness or column skewness: trans method is set to 'None' \n")
@@ -275,6 +276,8 @@ MatTrans.EM.orig <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NU
 				}
 			}
 		}
+
+
 
 		if(is.null(la)){
 			if(trans != "None"){
@@ -325,6 +328,9 @@ MatTrans.EM.orig <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NU
 			
 			index <- NULL
 			Model <- NULL
+
+
+
 			for(ij in 1:length(model)){
 				
 				code1 <- code.convert(model[ij])$Mu.num
@@ -381,11 +387,23 @@ MatTrans.EM.orig <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NU
 		if(trans == "Power"){
 			trans.type <- 1
 			cat("Power transformation \n")
+			if(initial[[1]]$scale != 1){
+				cat("Models are fitted to the scaled data. Results are not scaled back. \n" )
+				for(i in 1:length(initial)){
+					initial[[i]]$scale <- 1
+				}
+			}
 		}
 		else if(trans == "Manly"){
 
 			trans.type <- 2
 			cat("Manly transformation \n")
+			if(initial[[1]]$scale != 1){
+				cat("Models are fitted to the scaled data. Results are not scaled back. \n" )
+				for(i in 1:length(initial)){
+					initial[[i]]$scale <- 1
+				}
+			}
 
 		}
 		else if(trans == "None"){
@@ -394,10 +412,16 @@ MatTrans.EM.orig <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NU
 			if(row.skew || col.skew){
 				cat("trans method is set to 'None' -- row.skew and col.skew are set to FALSE \n") 
 			}
+			if(initial[[1]]$scale != 1){
+				cat("Models are fitted to the scaled data. Log-likelihood and BIC values are scaled back. \n" )
+			}
 
+			
 		}
 
 		result <- list()
+
+
 
 		for(i in 1:length(initial)){
 			if(silent != TRUE){
@@ -603,7 +627,7 @@ MatTrans.EM.orig <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NU
 
 
 		
-		ret <- list(result = result, model = Model, loglik = loglik, bic = bic, best.result = best.result, best.model = best.model, best.loglik = best.loglik, best.bic = best.bic, trans = trans)
+		ret <- list(scale = initial[[1]]$scale, result = result, model = Model, loglik = loglik, bic = bic, best.result = best.result, best.model = best.model, best.loglik = best.loglik, best.bic = best.bic, trans = trans)
 	
 		class(ret) <- "MatTransMix"
 	
@@ -788,18 +812,19 @@ MatTrans.EM <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NULL, t
 		if(!all.models){
 
 			cat("For the best model:", shortEM$best.model, "\n")
-
+			
 			init <- list()
 
 			W.result <- NULL
-			W.result$y <- as.vector(Y)				
+			W.result$y <- initial[[1]]$y				
 			W.result$gamma1 <- shortEM$best.result[[1]]$gamma
 			W.result$invS1 <- apply(shortEM$best.result[[1]]$Sigma, 3, solve)
 			W.result$tau <-  shortEM$best.result[[1]]$tau
 			W.result$Mu1 <-  shortEM$best.result[[1]]$Mu
 			W.result$invPsi1 <- apply(shortEM$best.result[[1]]$Psi, 3, solve)
 			W.result$detS <- shortEM$best.result[[1]]$detS
-			W.result$detPsi <- shortEM$best.result[[1]]$detPsi			
+			W.result$detPsi <- shortEM$best.result[[1]]$detPsi
+			W.result$scale <- shortEM$scale
 	
 			init[[1]] <- W.result	
 		
@@ -838,14 +863,15 @@ MatTrans.EM <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NULL, t
 				init <- list()
 
 				W.result <- NULL
-				W.result$y <- as.vector(Y)				
+				W.result$y <- initial[[1]]$y				
 				W.result$gamma1 <- shortEM$result[[i]]$gamma
 				W.result$invS1 <- apply(shortEM$result[[i]]$Sigma, 3, solve)
 				W.result$tau <-  shortEM$result[[i]]$tau
 				W.result$Mu1 <-  shortEM$result[[i]]$Mu
 				W.result$invPsi1 <- apply(shortEM$result[[i]]$Psi, 3, solve)
 				W.result$detS <- shortEM$result[[i]]$detS
-				W.result$detPsi <- shortEM$result[[i]]$detPsi			
+				W.result$detPsi <- shortEM$result[[i]]$detPsi
+				W.result$scale <- shortEM$scale				
 	
 				#cat(W.result$gamma1, "\n")
 				init[[1]] <- W.result	
@@ -853,6 +879,7 @@ MatTrans.EM <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NULL, t
 				if(trans != "None"){
 
 					try0 <- try(longEM$result[[i]] <- MatTrans.EM.orig(Y, initial = init, la = shortEM$result[[i]]$la, nu = shortEM$result[[i]]$nu, model = shortEM$model[i], trans = shortEM$trans, la.type = la.type, row.skew = row.skew, col.skew = col.skew, tol = tol, max.iter = long.iter, size.control = size.control, silent = silent, check = TRUE)$result[[1]])
+					
 
 				}
 				else{
@@ -876,9 +903,8 @@ MatTrans.EM <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NULL, t
 			best.bic <- bic[find.min]
 
 
-			ret <- list(result = longEM$result, model = longEM$model, loglik = loglik, bic = bic, best.result = best.result, best.model = best.model, best.loglik = best.loglik, best.bic = best.bic, trans = trans)
+			ret <- list(scale = shortEM$scale, result = longEM$result, model = longEM$model, loglik = loglik, bic = bic, best.result = best.result, best.model = best.model, best.loglik = best.loglik, best.bic = best.bic, trans = trans)
 
-	
 			class(ret) <- "MatTransMix"
 
 
