@@ -1,6 +1,6 @@
-3c6953bcf15c469fb8ea1bb2493e6749 *DESCRIPTION
+038756ce20946d59b51e00e0c57ce131 *DESCRIPTION
 6e6c71a40969cf99374c71595fac5d70 *NAMESPACE
-061593036e3d462fdf343ff56acb41cf *NEWS
+fabc7dc52afbbca98c98745381eb71cc *NEWS
 f5e5b47ce5ce31cba829e7e7c1dc648e *R/libMatTransFull.R
 8e91532ef6b881b40cc47aba5f31ad95 *R/plot.R
 3d76bbbb5012d0a5c641424fa94e9061 *R/print.R
@@ -24,9 +24,9 @@ cdc461f02bb74a848be532ef6c40175d *demo/EMdemoIris3.R
 14d727b018e8137e69450b11eb2c7a7c *demo/Initdemo.R
 afe7ac5f57412b7aeffd5676a1bf3150 *inst/CITATION
 c71697cb4f41155d91dfa2f43917d276 *man/IMDb.Rd
-047ff8ee944901823e202c8768d077f3 *man/MatTrans.EM.Rd
+188a75dc82a573b5f672d11a6be2c1ba *man/MatTrans.EM.Rd
 c22d2301766921be196ebfd23053d670 *man/MatTrans.init.Rd
-b1a4397f4a313d8bd9f3c2c3b4215c5b *man/MatTrans.plot.Rd
+1acc7840e2750bea7c23f63e042a1c24 *man/MatTrans.plot.Rd
 26f374ce61e24bdce2c53fc5d6145abc *man/MatTransMix-package.Rd
 a5e611f73bab512c560feeac4c6857e6 *man/Salary.Rd
 cd35549522a671c1ff4b273d8906ca4a *man/crime.Rd
