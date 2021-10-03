@@ -1473,9 +1473,13 @@ double Mstep_Trans_Full(int p, int T, int n, int K, double *misc_double, double 
 	else if(Psi_type == 6){
 		modelA5(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detPsi, trans_type);		
 	}
-	else{
+	else if(Psi_type == 7){
 		modelA6(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detPsi, trans_type);
 	}
+	else if(Psi_type == 8){
+		modelA7(p, T, n, K, Y, la, nu, tau, Mu, gamma, invS, invPsi, detPsi, trans_type);
+	}
+
 
 	if(trans_type == 0){
 		Q_value0 = 0;
@@ -1719,6 +1723,7 @@ void EM_Trans_Full(int p, int T, int n, int K, double ***Y, double **la, double 
 	else if(Psi_type == 5){M += (T-1)*(K+T/2);}
 	else if(Psi_type == 6){M += (T-1)*(1+K*T/2);}
 	else if(Psi_type == 7){M += K*T*(T+1)/2-K;}
+	else if(Psi_type == 8){M += K;}
 	
 
 	//printf(" pars  %d %d %d %d %d %d %d\n", p, K, T, Mu_type, Sigma_type, Psi_type, M);

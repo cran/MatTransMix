@@ -15,6 +15,149 @@
 
 
 
+void modelA7(int p, int T, int n, int K, double ***Y, double **la, double **nu, double *tau, double ***Mu, double **gamma, double ***invS, double ***invPsi, double *detPsi, int trans_type){
+  
+	int k, t1, t2, t;
+	double **temp1, **temp2;
+	double **Muk, ***MY, **MYi, **tMYi, **invPsik0, **invSk, *par, Psi2, phi, **A1, **A2, **I, *gamma_k;
+	double **WC;
+
+	MAKE_3ARRAY(MY, p,T,n);
+	MAKE_MATRIX(MYi, p, T);
+	MAKE_MATRIX(tMYi, T, p);
+	MAKE_MATRIX(invSk, p, p);
+	MAKE_MATRIX(invPsik0, T, T);
+	MAKE_MATRIX(temp1, T, p);
+	MAKE_MATRIX(temp2, T, T);
+	MAKE_MATRIX(Muk, p, T);
+	MAKE_MATRIX(WC, T, T);
+	MAKE_VECTOR(gamma_k, n);
+
+	MAKE_VECTOR(par,2);
+	MAKE_MATRIX(A1, T, T);
+	MAKE_MATRIX(A2, T, T);
+	MAKE_MATRIX(I, T, T);
+
+	Anull(WC, T, T);
+	anull(par, 2);	
+
+
+	for(k=0; k<K; k++){
+
+		Trans_trans_whole(n, p, T, la[k], nu[k], Y, MY, trans_type);
+
+		cpyk(Mu, p, T, k, Muk);
+
+		cpyv(gamma, k, n, gamma_k);	
+		cpyk(invS, p, p, k, invSk);
+
+		//printf(" psi2 phi %lf %lf %lf %lf\n", Muk[0][0], MY[0][0][0], gamma_k[0], invSk[0][0]);
+
+		findPsi2phi(n, p, T, par, MY, Muk, gamma_k, invSk, 0.000001);
+
+		Psi2 = par[0];
+		phi = par[1];
+
+		//printf(" psi2 phi %lf %lf \n", Psi2, phi);
+
+		Anull(A1, T, T);
+		Anull(A2, T, T);
+		Anull(I, T, T);
+		Anull(invPsik0, T, T);
+
+
+		for(t1=0; t1<T; t1++){
+
+			for(t2=0; t2<T; t2++){
+
+				if(abs(t1-t2) == 1){
+
+					A1[t1][t2] = - phi / Psi2;
+ 
+
+				}
+
+			}
+
+		}
+
+		for(t=1; t<T-1; t++){
+
+
+			A2[t][t] = pow(phi, 2) / Psi2;
+ 
+
+		}
+
+
+		for(t=0; t<T; t++){
+
+
+			I[t][t] = 1.0 / Psi2;
+ 
+
+		}
+
+		for(t1=0; t1<T; t1++){
+
+			for(t2=0; t2<T; t2++){
+
+				invPsik0[t1][t2] = A1[t1][t2]+A2[t1][t2]+I[t1][t2];
+
+
+			}
+
+		}
+
+		//printf(" invPsi %lf \n", invPsik0[0][0]);
+
+		detPsi[k] = pow(Psi2, T) /  (1.0 - pow(phi, 2));
+		cpyk2(invPsik0, T, T, invPsi, k);
+
+		//printf(" det %lf \n", detPsi[k]);
+
+
+
+	}
+
+	for(k=0; k<K; k++){
+
+		for(t1=0; t1<T; t1++){
+			for(t2=0; t2<T; t2++){
+
+				invPsi[t1][t2][k] = pow(detPsi[k], 1.0/T) * invPsi[t1][t2][k];
+
+			}
+
+		}
+
+		//printf(" invPsi updated %lf \n", invPsi[0][0][0]);
+
+		detPsi[k] = 1.0;
+
+	}
+
+	////
+
+
+
+
+	FREE_3ARRAY(MY);
+	FREE_MATRIX(MYi);
+	FREE_MATRIX(tMYi);
+	FREE_MATRIX(invSk);
+	FREE_MATRIX(invPsik0);
+	FREE_MATRIX(temp1);
+	FREE_MATRIX(temp2);
+	FREE_MATRIX(Muk);
+	FREE_MATRIX(WC);
+	
+
+
+}
+
+
+
 void modelA4(int p, int T, int n, int K, double ***Y, double **la, double **nu, double *tau, double ***Mu, double **gamma, double ***invS, double ***invPsi, double *detPsi, int trans_type){
   
 
@@ -932,4 +1075,226 @@ void modelA6(int p, int T, int n, int K, double ***Y, double **la, double **nu, 
 
 
 }
+
+
+
+void findPsi2phi(int n, int p, int T, double *par, double ***MY, double **Muk, double *gamma_k, double **invSk, double eps){
+
+	int t1, t2, i, t, j;
+
+	double phi, Psi2, traceA1 = 0.0, traceA2 = 0.0, traceI = 0.0, sum_gamma = 0.0, trA1, trA2, trI, *coeff;
+	
+	double **A1, **A2, **I, **MYi, **tMYi, **temp1, **temp2, **temp3, **maha1, **maha2, **maha3, *try, *start;
+
+
+
+	MAKE_MATRIX(A1, T, T);
+	MAKE_MATRIX(A2, T, T);
+	MAKE_MATRIX(I, T, T);
+	MAKE_MATRIX(MYi, p, T);
+	MAKE_MATRIX(tMYi, T, p);
+	MAKE_MATRIX(temp1, p, T);
+	MAKE_MATRIX(temp2, p, T);
+	MAKE_MATRIX(temp3, p, T);
+	MAKE_MATRIX(maha1, p, p);
+	MAKE_MATRIX(maha2, p, p);
+	MAKE_MATRIX(maha3, p, p);
+
+	MAKE_VECTOR(try, 3);
+	MAKE_VECTOR(coeff, 3);
+	MAKE_VECTOR(start, 3);
+
+	
+ 
+
+	Psi2 = par[0];
+	phi = par[1];
+	
+	for(i=0; i<n; i++){	
+	
+		sum_gamma += gamma_k[i];
+	
+	}
+	
+	Anull(A1, T, T);
+	Anull(A2, T, T);
+	Anull(I, T, T);
+
+	//printf("Q psi2 phi %lf %lf \n", Psi2, phi);
+	for(t1=0; t1<T; t1++){
+
+		for(t2=0; t2<T; t2++){
+
+			if(abs(t1-t2) == 1){
+
+				A1[t1][t2] = 1;
+ 
+
+			}
+
+		}
+
+	}
+
+	for(t=1; t<T-1; t++){
+
+
+		A2[t][t] = 1;
+ 
+
+	}
+
+
+	for(t=0; t<T; t++){
+
+
+		I[t][t] = 1;
+ 
+
+	}
+
+
+
+	for(i=0; i<n; i++){
+
+
+		cpyk(MY, p, T, i, MYi);
+
+		mat_(p, T, MYi, Muk);
+
+		tA(MYi, T, p, tMYi);
+
+		multiply(invSk, p, p, MYi, p, T, temp1);
+
+		multiply(temp1, p, T, A1, T, T, temp2);
+
+		multiply(temp2, p, T, tMYi, T, p, maha1);
+
+		multiply(temp1, p, T, A2, T, T, temp3);
+
+		multiply(temp3, p, T, tMYi, T, p, maha2);
+
+		multiply(temp1, p, T, tMYi, T, p, maha3);
+		
+		trA1 = 0;
+		trA2 = 0;
+		trI = 0;
+
+		for(j=0; j<p; j++){			
+	
+			trA1 += maha1[j][j];
+			trA2 += maha2[j][j];
+			trI += maha3[j][j];
+		}
+		traceA1 += gamma_k[i] * trA1;
+		traceA2 += gamma_k[i] * trA2;
+		traceI += gamma_k[i] * trI;
+
+	}
+
+	coeff[0] = (1.0 - 2.0 / T) * traceA1 / (2.0 / T - 2) / traceA2;
+	coeff[1] = (2 * traceA2 + 2.0 / T * traceI) / (2.0 / T - 2) / traceA2;
+	coeff[2] = -traceA1 / (2.0 / T - 2) / traceA2;
+
+	start[0] = 0.5;
+	start[1] = 0;
+	start[2] = -0.5;
+
+	rootfinding(eq3, start, coeff, eps);
+
+
+	
+	try[0] = (-start[0] * traceA1 + pow(start[0], 2) * traceA2 + traceI) / p / T / sum_gamma;
+	try[1] = (-start[1] * traceA1 + pow(start[1], 2) * traceA2 + traceI) / p / T / sum_gamma;
+	try[2] = (-start[2] * traceA1 + pow(start[2], 2) * traceA2 + traceI) / p / T / sum_gamma;
+	
+	if(fabs(start[0])<1 && try[0]>0) {
+		phi = start[0];
+		Psi2 = try[0];
+
+	}
+	else if(fabs(start[1])<1 && try[1]>0) {
+		phi = start[1];
+		Psi2 = try[1];
+
+	}
+	else if(fabs(start[2])<1 && try[2]>0) {
+		phi = start[2];
+		Psi2 = try[2];
+
+	}
+	par[0] = Psi2;
+	par[1] = phi;
+	
+	//printf("out psi2 phi %lf %lf \n", Psi2, phi);
+
+	FREE_VECTOR(coeff);
+
+	FREE_MATRIX(A1);
+	FREE_MATRIX(A2);
+	FREE_MATRIX(I);
+	FREE_MATRIX(MYi);
+	FREE_MATRIX(tMYi);
+	FREE_MATRIX(temp1);
+	FREE_MATRIX(temp2);
+	FREE_MATRIX(temp3);
+	FREE_MATRIX(maha1);
+	FREE_MATRIX(maha2);
+	FREE_VECTOR(start);
+	FREE_MATRIX(maha3);
+
+	FREE_VECTOR(try);
+
+
+}
+
+double eq3(double x, double *coeff)
+{
+    // the function we are interested in
+
+    return pow(x,3) + coeff[0] * pow(x,2) + coeff[1] * x + coeff[2];
+}
+
+
+
+
+void rootfinding(double (*func)(double, double *), double *start, double *coeff, double eps){
+
+	int i=0;
+	int max_iterations = 1000;
+	int done = 0;
+
+	double p0,q0,r0,p,q,r;
+
+	p = start[0];
+	q = start[1];
+	r = start[2];
+
+	while (i<max_iterations && done == 0){   
+		p0 = p;
+		q0 = q;
+		r0 = r;
+
+
+		p = p0 - func(p0, coeff)/((p0-q0)*(p0-r0));
+		q = q0 - func(q0, coeff)/((q0-p)*(q0-r0));
+		r = r0 - func(r0, coeff)/((r0-p)*(r0-q));
+
+
+    		if (fabs(p-p0)<eps && fabs(q-q0)<eps && fabs(r-r0)<eps){
+        		done = 1;
+			start[0] = p;
+			start[1] = q;
+			start[2] = r;
+
+		}
+		i++;
+	}
+
+}
+
+
+
+
+
 

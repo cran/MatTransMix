@@ -17,7 +17,7 @@ size.control = 0, silent = TRUE)
   \item{initial }{ initialization parameters provided by function MatTrans.init()}
   \item{la }{ initial skewness for rows (K x p)}
   \item{nu }{ initial skewness for columns (K x T)}
-   \item{model }{ parsimonious model type, if null, then all 196 models are run}
+   \item{model }{ parsimonious model type, if null, then all 210 models are run}
   \item{trans }{ transformation method: None (Gaussian models), Power, Manly}
   \item{la.type }{ lambda type 0 or 1, 0: unrestricted, 1: same lambda across all variables}
   \item{row.skew }{ if skewness for rows are fitted: TRUE or FALSE}
@@ -45,7 +45,7 @@ Runs the EM algorithm for modeling and clustering matrices for a provided datase
 "VEV" ellipsoidal, equal shape
 "EVV" ellipsoidal, equal volume (*)
 "VVV" ellipsoidal, varying volume, shape, and orientation
- The last 2-digit 'XX' specifies the variance-covariance Psi. There are 7 options including II, EI, VI, EE, VE, EV, VV. The user can specify the 'model' to be for example 'X-VVV-EV', then both 'G' and 'A' mean structures will be fitted while Sigma and Psi are fixed at 'VVV' and 'EV', respectively. Similarly, 'model' can be specified as 'G-XXX-EV' or 'G-VVV-XX' for selection of Sigma and Psi structures.
+ The last 2-digit 'XX' specifies the variance-covariance Psi. There are 8 options including II, EI, VI, EE, VE, EV, VV, AR. The user can specify the 'model' to be for example 'X-VVV-EV', then both 'G' and 'A' mean structures will be fitted while Sigma and Psi are fixed at 'VVV' and 'EV', respectively. Similarly, 'model' can be specified as 'G-XXX-EV' or 'G-VVV-XX' for selection of Sigma and Psi structures.
 }
 \value{
   \item{scale }{ scale parameter set by the user}

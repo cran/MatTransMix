@@ -12,11 +12,11 @@ K <- 2
 
 initial <- MatTrans.init(X, K = K, n.start = 1)
 
-Manly <- MatTrans.EM(X, initial = initial, la.type = 1, trans = "Manly", max.iter = 1000, model = "A-EVV-XX", silent = FALSE)
+Manly <- MatTrans.EM(X, initial = initial, la.type = 1, trans = "Manly", model = "A-EVV-XX", silent = FALSE)
 
-Power <- MatTrans.EM(X, initial = initial, la.type = 1, trans = "Power", max.iter = 1000, model = "X-EVI-EI", silent = FALSE)
+Power <- MatTrans.EM(X, initial = initial, la.type = 1, trans = "Power", model = "X-EVI-EI", silent = FALSE)
 
-Gauss <- MatTrans.EM(X, initial = initial, trans = "None", max.iter = 1000, model = "A-XXX-EI", silent = FALSE)
+Gauss <- MatTrans.EM(X, initial = initial, trans = "None", model = "A-XXX-EI", silent = FALSE)
 
 
 

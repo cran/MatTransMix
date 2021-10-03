@@ -182,8 +182,9 @@ code.convert <- function(code){
              ifelse(Psi == "EE", 4,
              ifelse(Psi == "VE", 5,
              ifelse(Psi == "EV", 6,
-             ifelse(Psi == "VV", 7, 
-	     ifelse(Psi == "XX", 0, -1))))))))
+             ifelse(Psi == "VV", 7,              
+	     ifelse(Psi == "AR", 8, 
+	     ifelse(Psi == "XX", 0, -1)))))))))
   
   list(Mu = Mu, Sigma = Sigma, Psi = Psi, Mu.num = Mu.num, Sigma.num = Sigma.num, Psi.num = Psi.num)
 }
@@ -221,7 +222,8 @@ code.back <- function(num){
          ifelse(Psi.num == 4, "EE", 
          ifelse(Psi.num == 5, "VE", 
          ifelse(Psi.num == 6, "EV", 
-         ifelse(Psi.num == 7, "VV", NULL)))))))
+         ifelse(Psi.num == 7, "VV", 
+         ifelse(Psi.num == 8, "AR", NULL))))))))
   
   list(Mu = Mu, Sigma = Sigma, Psi = Psi, Mu.num = Mu.num, Sigma.num = Sigma.num, Psi.num = Psi.num)
 }
@@ -309,12 +311,12 @@ MatTrans.EM.orig <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NU
 
 
 		if(is.null(model)){
-			index <- matrix(NA, 3, 14*7*2)
-			Model <- rep(NA, 14*7*2)
+			index <- matrix(NA, 3, 14*8*2)
+			Model <- rep(NA, 14*8*2)
 			iter <- 0
 			for(Mu.type in 1:2){
 				for(Sigma.type in 1:14){
-					for(Psi.type in 1:7){
+					for(Psi.type in 1:8){
 																	iter <- iter + 1
 						Model[iter] <- paste(code.back(c(Mu.type, Sigma.type, Psi.type))$Mu, "-", code.back(c(Mu.type, Sigma.type, Psi.type))$Sigma, "-", code.back(c(Mu.type, Sigma.type, Psi.type))$Psi, sep="")
 								
@@ -337,7 +339,7 @@ MatTrans.EM.orig <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NU
 				code2 <- code.convert(model[ij])$Sigma.num
 				code3<- code.convert(model[ij])$Psi.num
 			
-				
+				#cat(code3,"\n")
 				index.temp <- c(code1, code2, code3)
 				
 				#cat(index.temp, "\n")
@@ -354,7 +356,7 @@ MatTrans.EM.orig <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NU
 						code2 <- seq(1,14)
 					}
 					if(code3 == 0){
-						code3 <- seq(1,7)
+						code3 <- seq(1,8)
 					}
 
 					
@@ -642,153 +644,6 @@ MatTrans.EM.orig <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NU
 
 
 }
-
-
-
-
-
-
-check.Sigma <- function(A){
-	
-	loglik <- array(A$loglik, dim= c(7, 14, 2))
-	
-	
-	for(i in 1:2){
-		for(t in 1:7){
-			compare <- loglik[t,,i]	
-			if(compare[2]<compare[1]){
-				cat("VII>EII", compare[2], compare[1], "Mu", i, "Psi", t, "\n")
-			}
-			if(compare[3]<compare[1]){
-				cat("EEI>EII", compare[3], compare[1], "Mu", i, "Psi", t, "\n")
-			}
-			if(compare[4]<compare[2]){
-				cat("VEI>VII", compare[4], compare[2], "Mu", i, "Psi", t, "\n")
-			}
-			if(compare[4]<compare[3]){
-				cat("VEI>EEI", compare[4], compare[3], "Mu", i, "Psi", t, "\n")
-			}
-			if(compare[5]<compare[3]){
-				cat("EVI>EEI", compare[5], compare[3], "Mu", i, "Psi", t, "\n")
-			}
-			if(compare[6]<compare[5]){
-				cat("VVI>EVI", compare[6], compare[5], "Mu", i, "Psi", t, "\n")
-			}
-			if(compare[6]<compare[4]){
-				cat("VVI>VEI", compare[6], compare[4], "Mu", i, "Psi", t, "\n")
-			}
-			if(compare[7]<compare[3]){
-				cat("EEE>EEI", compare[7], compare[3], "Mu", i, "Psi", t, "\n")
-			}
-			if(compare[8]<compare[7]){
-				cat("VEE>EEE", compare[8], compare[7], "Mu", i, "Psi", t, "\n")
-			}
-			if(compare[8]<compare[4]){
-				cat("VEE>VEI", compare[8], compare[4], "Mu", i, "Psi", t, "\n")
-			}
-			if(compare[9]<compare[7]){
-				cat("EVE>EEE", compare[9], compare[7], "Mu", i, "Psi", t, "\n")
-			}
-			if(compare[9]<compare[5]){
-				cat("EVE>EVI", compare[9], compare[5], "Mu", i, "Psi", t, "\n")
-			}
-			if(compare[10]<compare[8]){
-				cat("VVE>VEE", compare[10], compare[8], "Mu", i, "Psi", t, "\n")
-			}
-			if(compare[10]<compare[9]){
-				cat("VVE>EVE", compare[10], compare[9], "Mu", i, "Psi", t, "\n")
-			}
-			if(compare[10]<compare[6]){
-				cat("VVE>VVI", compare[10], compare[6], "Mu", i, "Psi", t, "\n")
-			}
-			if(compare[11]<compare[7]){
-				cat("EEV>EEE", compare[11], compare[7], "Mu", i, "Psi", t, "\n")
-			}
-			if(compare[12]<compare[8]){
-				cat("VEV>VEE", compare[12], compare[8], "Mu", i, "Psi", t, "\n")
-			}
-			if(compare[12]<compare[11]){
-				cat("VEV>EEV", compare[12], compare[11], "Mu", i, "Psi", t, "\n")
-			}
-			if(compare[13]<compare[9]){
-				cat("EVV>EVE", compare[13], compare[9], "Mu", i, "Psi", t, "\n")
-			}
-			if(compare[13]<compare[11]){
-				cat("EVV>EEV", compare[13], compare[11], "Mu", i, "Psi", t, "\n")
-			}
-			if(compare[14]<compare[13]){
-				cat("VVV>EVV", compare[14], compare[13], "Mu", i, "Psi", t, "\n")
-			}
-			if(compare[14]<compare[12]){
-				cat("VVV>VEV", compare[14], compare[12], "Mu", i, "Psi", t, "\n")
-			}
-			if(compare[14]<compare[10]){
-				cat("VVV>VVE", compare[14], compare[10], "Mu", i, "Psi", t, "\n")
-
-			}
-		}
-	}
-	
-
-}
-
-check.Psi <- function(A){
-	
-	loglik <- array(A$loglik, dim= c(7, 14, 2))
-	
-	
-	for(i in 1:2){
-		for(j in 1:14){
-			compare <- loglik[,j,i]	
-			if(compare[2]<compare[1]){
-				cat("EI>II", compare[2], compare[1], "Mu", i, "Sigma", j, "\n")
-			}
-			if(compare[3]<compare[2]){
-				cat("VI>EI", compare[3], compare[2], "Mu", i, "Sigma", j, "\n")
-			}
-			if(compare[4] <compare[2]){
-				cat("EE>EI", compare[4], compare[2], "Mu", i, "Sigma", j, "\n")
-			}
-			if(compare[5]<compare[3]){
-				cat("VE>VI", compare[5], compare[3], "Mu", i, "Sigma", j, "\n")
-			}
-			if(compare[5]<compare[4]){
-				cat("VE>EE", compare[5], compare[4], "Mu", i, "Sigma", j, "\n")
-			}
-			if(compare[6]<compare[4]){
-				cat("EV>EE", compare[6], compare[4], "Mu", i, "Sigma", j, "\n")
-			}
-			if(compare[7]<compare[6]){
-				cat("VV>EV", compare[7], compare[6], "Mu", i, "Sigma", j, "\n")
-			}
-			if(compare[7]<compare[5]){
-				cat("VV>VE", compare[7], compare[5], "Mu", i, "Sigma", j, "\n")
-			}
-			
-		}
-	}
-
-
-}
-
-check.Mu <- function(A){
-	
-	loglik <- array(A$loglik, dim= c(7, 14, 2))
-	
-	
-	for(t in 1:7){
-		for(j in 1:14){
-			compare <- loglik[t,j,]	
-			if(compare[2]<compare[1]){
-				cat("G>A", compare[2], compare[1], "Sigma", j, "Psi", t, "\n")
-			}	
-		}
-	}
-
-	
-
-}
-
 
 
 

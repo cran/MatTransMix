@@ -37,6 +37,10 @@ void modelA5(int p, int T, int n, int K, double ***Y, double **la, double **nu, 
 void modelA6(int p, int T, int n, int K, double ***Y, double **la, double **nu, double *tau, double ***Mu, double **gamma, double ***invS, double ***invPsi, double *detPsi, int trans_type);
 void modelA4(int p, int T, int n, int K, double ***Y, double **la, double **nu, double *tau, double ***Mu, double **gamma, double ***invS, double ***invPsi, double *detPsi, int trans_type);
 void svd(double **A, double *S2, int n);
+void findPsi2phi(int n, int p, int T, double *par, double ***MY, double **Muk, double *gamma_k, double **invSk, double eps);
+double eq3(double x, double *coeff);
+void rootfinding(double (*func)(double, double *), double *start, double *coeff, double eps);
+void modelA7(int p, int T, int n, int K, double ***Y, double **la, double **nu, double *tau, double ***Mu, double **gamma, double ***invS, double ***invPsi, double *detPsi, int trans_type);
 
 
 void modelB1(int p, int T, int n, int K, double ***Y, double **la, double **nu, double *tau, double ***Mu, double **gamma, double ***invS, double ***invPsi, double *detS, int trans_type);

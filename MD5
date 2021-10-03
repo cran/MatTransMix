@@ -1,7 +1,7 @@
-038756ce20946d59b51e00e0c57ce131 *DESCRIPTION
+5a8e2f3be4103daec73623bba021012e *DESCRIPTION
 6e6c71a40969cf99374c71595fac5d70 *NAMESPACE
-fabc7dc52afbbca98c98745381eb71cc *NEWS
-f5e5b47ce5ce31cba829e7e7c1dc648e *R/libMatTransFull.R
+63a73b4cc05e78e75aa702012e6d896e *NEWS
+56f44114f161943dbb16afb1d4da7911 *R/libMatTransFull.R
 8e91532ef6b881b40cc47aba5f31ad95 *R/plot.R
 3d76bbbb5012d0a5c641424fa94e9061 *R/print.R
 4fd9535927e22d1e3b2deee49cfb928e *data/IMDb.RData
@@ -9,7 +9,7 @@ d78dee47245971deb4c7fbf083087e43 *data/Salary.RData
 90afe60a89c183fb4ce06068f915a55d *data/crime.RData
 ceaa785fcd6c739b8b8df3a3f4a5d380 *demo/00Index
 a4455075f47797753e90091c29cb5c83 *demo/EMalgorithm1.R
-c76bba4b107aa5db5449d03660ba62a5 *demo/EMalgorithm2.R
+4981c0954916d99ca5f89861d1321002 *demo/EMalgorithm2.R
 d402c9b62776d8ee76c5b11ce7608361 *demo/EMdemoCrime1.R
 a912f4c4e175fc80ac138b326cbd1b7a *demo/EMdemoCrime2.R
 d71551ef3b8498a58a755dad3f491ea3 *demo/EMdemoCrime3.R
@@ -24,7 +24,7 @@ cdc461f02bb74a848be532ef6c40175d *demo/EMdemoIris3.R
 14d727b018e8137e69450b11eb2c7a7c *demo/Initdemo.R
 afe7ac5f57412b7aeffd5676a1bf3150 *inst/CITATION
 c71697cb4f41155d91dfa2f43917d276 *man/IMDb.Rd
-188a75dc82a573b5f672d11a6be2c1ba *man/MatTrans.EM.Rd
+d239adecb47aa6e4fdc544fc73241e50 *man/MatTrans.EM.Rd
 c22d2301766921be196ebfd23053d670 *man/MatTrans.init.Rd
 1acc7840e2750bea7c23f63e042a1c24 *man/MatTrans.plot.Rd
 26f374ce61e24bdce2c53fc5d6145abc *man/MatTransMix-package.Rd
@@ -32,7 +32,7 @@ a5e611f73bab512c560feeac4c6857e6 *man/Salary.Rd
 cd35549522a671c1ff4b273d8906ca4a *man/crime.Rd
 fc33439ead322fe4b59a5c4fc90171b2 *man/print.summary.Rd
 9bc5aa7d4334d43640f515c9a1fd70bd *src/Makevars
-67624ba97cba23ec38433fb8f7ffa846 *src/MatTransMix.h
+4dcb5428138cb359bab97e4b880db17c *src/MatTransMix.h
 499ab136cfbd8b4ffaeb96a634764c95 *src/array.h
 8e9383adf3bf56f487a27112d6126cec *src/cephes_eigens.h
 0787c9b03b79260599a08d680da87673 *src/crosen1.c
@@ -41,9 +41,9 @@ fc33439ead322fe4b59a5c4fc90171b2 *man/print.summary.Rd
 a34982fa892b7f7a258d1d3a39aa0bb9 *src/libCEigen.c
 c650f3325ebe4846a79be40e3bdeaf44 *src/libEVD.c
 9d498f9d334cb567eda02094e73b6182 *src/libEVD_LAPACK.c
-360148243aca9cb916e02a9abc0597d7 *src/libFull.c
+d070093197e857eb2d9ed01f93c1a460 *src/libFull.c
 892260512f64840ba1e92abccc217407 *src/libMatrix.c
-1e317fa44035224cabecaca5abc00b35 *src/libPsi.c
+9c7b4c843fb3504da7a20e5b014c61ea *src/libPsi.c
 ae4c91f34adbbe122a9b47f8e135fc62 *src/libRandC.c
 1cd7a1179e80bd0e8c6d946ad0196589 *src/libSigma_1.c
 fcbc807d661668f9a66ede433b2499f6 *src/libSigma_2.c
