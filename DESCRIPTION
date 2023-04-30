@@ -1,6 +1,6 @@
 Package: MatTransMix
-Version: 0.1.15
-Date: 2021-10-03
+Version: 0.1.16
+Date: 2023-04-27
 Title: Clustering with Matrix Gaussian and Matrix Transformation
         Mixture Models
 Authors@R: c(person("Xuwen", "Zhu", role = c("aut", "cre"),
@@ -18,7 +18,7 @@ LazyData: no
 Description: Provides matrix Gaussian mixture models, matrix transformation mixture models and their model-based clustering results. The parsimonious models of the mean matrices and variance covariance matrices are implemented with a total of 196 variations. 
 License: GPL (>= 2)
 Imports: mvtnorm
-Packaged: 2021-10-03 20:02:03 UTC; root
+Packaged: 2023-04-28 17:55:46 UTC; root
 Author: Xuwen Zhu [aut, cre],
   Volodymyr Melnykov [aut],
   Shuchismita Sarkar [ctb],
@@ -30,4 +30,4 @@ Author: Xuwen Zhu [aut, cre],
 Maintainer: Xuwen Zhu <xzhu20@cba.ua.edu>
 NeedsCompilation: yes
 Repository: CRAN
-Date/Publication: 2021-10-03 20:20:01 UTC
+Date/Publication: 2023-04-30 10:50:09 UTC
