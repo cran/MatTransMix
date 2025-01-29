@@ -25,7 +25,7 @@ MatTrans.plot <- function(X, model = NULL, xlab = "", ylab = "", rownames = NULL
 		if(is.null(line.cols)){
 			line.cols <- seq(1, p)
 		}
-		par(mfrow = c(1,K))
+		#par(mfrow = c(1,K))
 
 		for(k in 1:K){
 
@@ -72,7 +72,8 @@ MatTrans.plot <- function(X, model = NULL, xlab = "", ylab = "", rownames = NULL
 		}
 
 		legend(0.3, min(X) + 1/5*(max(X) - min(X)), legend=rownames, col=line.cols, lty = rep(1, p), cex = 1)
-
+		#oldpar <- par(no.readonly = TRUE) # code line i
+		#on.exit(par(oldpar)) # code line i + 1
 	}
 }
 

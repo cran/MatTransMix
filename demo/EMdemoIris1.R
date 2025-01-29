@@ -1,7 +1,6 @@
 ########################
 #### EMdemoIris #######
 ########################
-options(show.error.messages = FALSE)
 
 set.seed(123)
 data(iris)

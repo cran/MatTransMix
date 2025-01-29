@@ -22,6 +22,7 @@ lwd.obs = 0.8, lwd.mean = 2, line.cols = NULL, ...)
   \item{line.cols }{ line colors of the mean and observations }
    \item{...}{further arguments related to \code{\link{plot}} and \code{\link{lines}}}
 }
+\value{No return value, called for side effects}
 \details{
 Provides the mean profile plot for the fitted data by MatTrans.EM model. 
 }

@@ -1,7 +1,6 @@
 ########################
 #### EMdemoIris #######
 ########################
-options(show.error.messages = FALSE)
 
 set.seed(123)
 data(iris)
@@ -21,10 +20,3 @@ V$best.model
 table(V$best.result[[1]]$id, iris[,5])
 
 
-#################################################
-library(mclust)
-A <- as.matrix(iris[,-5])
-mc <- Mclust(A, G = 3)
-
-mc$bic
-mc$modelName

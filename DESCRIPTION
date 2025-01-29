@@ -1,10 +1,10 @@
 Package: MatTransMix
-Version: 0.1.16
-Date: 2023-04-27
+Version: 0.1.18
+Date: 2025-1-6
 Title: Clustering with Matrix Gaussian and Matrix Transformation
         Mixture Models
 Authors@R: c(person("Xuwen", "Zhu", role = c("aut", "cre"),
-                    email = "xzhu20@cba.ua.edu"),
+                    email = "xzhu20@ua.edu"),
              person("Volodymyr", "Melnykov", role = "aut"),
              person("Shuchismita", "Sarkar", role = "ctb"),
              person("Michael", "Hutt", role = c("ctb", "cph")),
@@ -15,10 +15,10 @@ Authors@R: c(person("Xuwen", "Zhu", role = c("aut", "cre"),
 Depends: R (>= 3.0.0)
 LazyLoad: yes
 LazyData: no
-Description: Provides matrix Gaussian mixture models, matrix transformation mixture models and their model-based clustering results. The parsimonious models of the mean matrices and variance covariance matrices are implemented with a total of 196 variations. 
+Description: Provides matrix Gaussian mixture models, matrix transformation mixture models and their model-based clustering results. The parsimonious models of the mean matrices and variance covariance matrices are implemented with a total of 196 variations. For more information, please check: Xuwen Zhu, Shuchismita Sarkar, and Volodymyr Melnykov (2021), "MatTransMix: an R package for matrix model-based clustering and parsimonious mixture modeling",  <doi:10.1007/s00357-021-09401-9>.
 License: GPL (>= 2)
 Imports: mvtnorm
-Packaged: 2023-04-28 17:55:46 UTC; root
+Packaged: 2025-01-24 20:13:27 UTC; zhu
 Author: Xuwen Zhu [aut, cre],
   Volodymyr Melnykov [aut],
   Shuchismita Sarkar [ctb],
@@ -27,7 +27,7 @@ Author: Xuwen Zhu [aut, cre],
   Rouben Rostamian [ctb, cph],
   Carl Edward Rasmussen [ctb, cph],
   Dianne Cook [ctb, cph]
-Maintainer: Xuwen Zhu <xzhu20@cba.ua.edu>
+Maintainer: Xuwen Zhu <xzhu20@ua.edu>
 NeedsCompilation: yes
 Repository: CRAN
-Date/Publication: 2023-04-30 10:50:09 UTC
+Date/Publication: 2025-01-29 17:20:08 UTC

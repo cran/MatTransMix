@@ -13,9 +13,9 @@ double simplex1(double (*func)(int, int, int, double *, double *, double ***, do
   
   int vs;        	
   int vh;        	
-  int vg;        
+  int vg;  
+  int k;      
   int i,j,m,row, n = 0;
-  int k;		
   int itr;		
   
   double **v;          

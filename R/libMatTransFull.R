@@ -1,4 +1,4 @@
-options(show.error.messages = FALSE)
+
 eucl.dist <- function(X, Y){
 
 	sqrt(sum(X - Y)^2)
@@ -254,27 +254,27 @@ MatTrans.EM.orig <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NU
 
 			if((row.skew == FALSE) && (col.skew == FALSE)){
 				trans <- "None"
-				cat("No row skewness or column skewness: trans method is set to 'None' \n")
+				message("No row skewness or column skewness: trans method is set to 'None' \n")
 			}
 
 			else if(row.skew == FALSE){
 				if(trans == "Power"){
 					la <- matrix(1, K, p)
-					cat("No row skewness lambda -- 1 \n")
+					message("No row skewness lambda -- 1 \n")
 				}
 				else if(trans == "Manly"){
 					la <- matrix(0, K, p)
-					cat("No row skewness lambda -- 0 \n")
+					message("No row skewness lambda -- 0 \n")
 				}
 			}
 			else if(col.skew == FALSE){
 				if(trans == "Power"){
 					nu <- matrix(1, K, T)
-					cat("No column skewness nu -- 1 \n")
+					message("No column skewness nu -- 1 \n")
 				}
 				else if(trans == "Manly"){
 					nu <- matrix(0, K, T)
-					cat("No column skewness nu -- 0 \n")
+					message("No column skewness nu -- 0 \n")
 				}
 			}
 		}
@@ -284,26 +284,26 @@ MatTrans.EM.orig <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NU
 		if(is.null(la)){
 			if(trans != "None"){
 				la <- matrix(0.5, K, p)
-				cat("Initial lambda -- 0.5 \n")
+				message("Initial lambda -- 0.5 \n")
 			}
 		}
 		if(is.null(nu)){
 			if(trans != "None"){
 				nu <- matrix(0.5, K, T)
-				cat("Initial nu -- 0.5 \n")
+				message("Initial nu -- 0.5 \n")
 			}
 		}
 		if(la.type == 0){
 			if(trans != "None"){
 				if(row.skew){
-					cat("Unrestricted lambda type \n")
+					message("Unrestricted lambda type \n")
 				}
 			}
 		}
 		if(la.type == 1){
 			if(trans != "None"){
 				if(row.skew){
-					cat("Lambda same across all variables \n")
+					message("Lambda same across all variables \n")
 				}
 			}
 		}
@@ -339,13 +339,13 @@ MatTrans.EM.orig <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NU
 				code2 <- code.convert(model[ij])$Sigma.num
 				code3<- code.convert(model[ij])$Psi.num
 			
-				#cat(code3,"\n")
+				#stop(code3,"\n")
 				index.temp <- c(code1, code2, code3)
 				
-				#cat(index.temp, "\n")
+				#stop(index.temp, "\n")
 
  				if(any(index.temp == -1)){
-					stop("model code is not identifiable...\n")
+					message("model code is not identifiable...\n")
 				}
 				else if(any(index.temp == 0)){
 
@@ -373,7 +373,7 @@ MatTrans.EM.orig <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NU
 
 				index <- cbind(index, index.temp)
 
-				#cat(index, "\n")
+				#stop(index, "\n")
 
 			}
 
@@ -388,9 +388,9 @@ MatTrans.EM.orig <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NU
 				
 		if(trans == "Power"){
 			trans.type <- 1
-			cat("Power transformation \n")
+			message("Power transformation \n")
 			if(initial[[1]]$scale != 1){
-				cat("Models are fitted to the scaled data. Results are not scaled back. \n" )
+				message("Models are fitted to the scaled data. Results are not scaled back. \n" )
 				for(i in 1:length(initial)){
 					initial[[i]]$scale <- 1
 				}
@@ -399,9 +399,9 @@ MatTrans.EM.orig <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NU
 		else if(trans == "Manly"){
 
 			trans.type <- 2
-			cat("Manly transformation \n")
+			message("Manly transformation \n")
 			if(initial[[1]]$scale != 1){
-				cat("Models are fitted to the scaled data. Results are not scaled back. \n" )
+				stop("Models are fitted to the scaled data. Results are not scaled back. \n" )
 				for(i in 1:length(initial)){
 					initial[[i]]$scale <- 1
 				}
@@ -410,12 +410,12 @@ MatTrans.EM.orig <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NU
 		}
 		else if(trans == "None"){
 			trans.type <- 0
-			cat("None -- no transformation \n")
+			message("None -- no transformation \n")
 			if(row.skew || col.skew){
-				cat("trans method is set to 'None' -- row.skew and col.skew are set to FALSE \n") 
+				message("trans method is set to 'None' -- row.skew and col.skew are set to FALSE \n") 
 			}
 			if(initial[[1]]$scale != 1){
-				cat("Models are fitted to the scaled data. Log-likelihood and BIC values are scaled back. \n" )
+				message("Models are fitted to the scaled data. Log-likelihood and BIC values are scaled back. \n" )
 			}
 
 			
@@ -427,7 +427,7 @@ MatTrans.EM.orig <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NU
 
 		for(i in 1:length(initial)){
 			if(silent != TRUE){
-				cat("Initialization", i, "\n")
+				message("Initialization", i, "\n")
 			}
 	
 			ll <- rep(0, 3)
@@ -455,10 +455,10 @@ MatTrans.EM.orig <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NU
 					
 				}
 
-				#cat("trans.type", trans.type, "\n")
+				#stop("trans.type", trans.type, "\n")
 				misc_int <- c(p, T, n, K, max.iter, index[1,iter], index[2,iter], index[3,iter], la.type, trans.type)
 
-				#cat(la, "la", "\n")
+				#stop(la, "la", "\n")
 
 				try0 <- try(temp <- .C("run_Mat_Trans_Full", y = as.double(initial[[i]]$y), misc_int = as.integer(misc_int), misc_double = as.double(misc_double), tau = as.double(initial[[i]]$tau), la1 = as.double(as.vector(la)), nu1 = as.double(as.vector(nu)), Mu1 = as.double(initial[[i]]$Mu1), invS1 = as.double(initial[[i]]$invS1), invPsi1 = as.double(initial[[i]]$invPsi1), detS = as.double(initial[[i]]$detS), detPsi = as.double(initial[[i]]$detPsi), gamma1 = as.double(initial[[i]]$gamma1), id = as.integer(id), ll = as.double(ll), conv = as.integer(conv), scale = as.double(initial[[i]]$scale), PACKAGE = "MatTransMix"), silent = TRUE)
 				
@@ -486,7 +486,7 @@ MatTrans.EM.orig <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NU
 				if (iif_0 != 1){
 
 					if(silent != TRUE){
-																	cat("Model", Model[iter], "BIC", temp$ll[2],"\n")
+																	message("Model", Model[iter], "BIC", temp$ll[2],"\n")
 																											}
 					if(!is.na(temp$ll[1])){	
 					if(temp$ll[1] > loglik[iter]){
@@ -638,7 +638,7 @@ MatTrans.EM.orig <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NU
 
 	}
 	else{
-		stop("Use MatTrans.init() to get initialization...\n")
+		message("Use MatTrans.init() to get initialization...\n")
 
 	}
 
@@ -657,16 +657,16 @@ MatTrans.EM <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NULL, t
 
 	}
 	else{
-		cat("Short EM has been started", "\n")
+		message("Short EM has been started", "\n")
 
 		shortEM <- MatTrans.EM.orig(Y, initial = initial, la = la, nu = nu, model = model, trans = trans, la.type = la.type, row.skew = row.skew, col.skew = col.skew, tol = tol, max.iter = short.iter, size.control = size.control, silent = silent, check = FALSE)
 
 
-		cat("Long EM has been started", "\n")
+		message("Long EM has been started", "\n")
 
 		if(!all.models){
 
-			cat("For the best model:", shortEM$best.model, "\n")
+			message("For the best model:", shortEM$best.model, "\n")
 			
 			init <- list()
 
@@ -698,7 +698,7 @@ MatTrans.EM <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NULL, t
 		}
 		else{
 
-			cat("For all models:", shortEM$model, "\n")
+			message("For all models:", shortEM$model, "\n")
 
 			longEM <- list()
 
@@ -728,7 +728,7 @@ MatTrans.EM <- function(Y, initial = NULL, la = NULL, nu = NULL, model = NULL, t
 				W.result$detPsi <- shortEM$result[[i]]$detPsi
 				W.result$scale <- shortEM$scale				
 	
-				#cat(W.result$gamma1, "\n")
+				#stop(W.result$gamma1, "\n")
 				init[[1]] <- W.result	
 				
 				if(trans != "None"){

@@ -47,18 +47,7 @@ Runs the EM algorithm for modeling and clustering matrices for a provided datase
 "VVV" ellipsoidal, varying volume, shape, and orientation
  The last 2-digit 'XX' specifies the variance-covariance Psi. There are 8 options including II, EI, VI, EE, VE, EV, VV, AR. The user can specify the 'model' to be for example 'X-VVV-EV', then both 'G' and 'A' mean structures will be fitted while Sigma and Psi are fixed at 'VVV' and 'EV', respectively. Similarly, 'model' can be specified as 'G-XXX-EV' or 'G-VVV-XX' for selection of Sigma and Psi structures.
 }
-\value{
-  \item{scale }{ scale parameter set by the user}
-  \item{result }{ parsimonious models}
-  \item{model }{ model types}
-  \item{loglik }{ log likelihood values}
-  \item{bic }{ bic values}
-  \item{best.result }{ best parsimonious model}
-  \item{best.model }{ best model type}
-  \item{best.loglik }{ best logliklihood}
-  \item{best.bic }{ best bic}
-  \item{trans }{ transformation type}
-}
+\value{No return value, called for side effects}
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{ EM algorithm }% __ONLY ONE__ keyword per line

@@ -15,9 +15,9 @@ double simplex2(double (*func)(int, int, int, double *, double *, double ***, do
   int vh;        	
   int vg;        	
   
-  int i,j,m,row, n;
-  int k;		
-  int itr;		
+  int i,j,m,row, n;		
+  int itr;	
+  int k;	
   
   double **v;           
   double pn,qn;        
