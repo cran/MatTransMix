@@ -12,11 +12,17 @@
 #ifndef __HAVE_R_
 #define MAKE_1ARRAY(a,n) do {                                                \
     (a) = malloc((n) * sizeof *(a));                                         \
+    if ((a)==NULL)                                                           \
+        fprintf(stderr, "*** in file %s, function %s(), line %d: "           \
+                "out of memory!\n",  __FILE__, __func__, __LINE__);          \
 } while (0)                                                                  
 #else
 #include <R.h>
 #define MAKE_1ARRAY(a,n) do {                                                \
     (a) = malloc((n) * sizeof *(a));                                         \
+    if ((a)==NULL)                                                           \
+        REprintf("*** in file %s, function %s(), line %d: "           \
+                "out of memory!\n",  __FILE__, __func__, __LINE__);          \
 } while (0)                                                                  
 #endif
 

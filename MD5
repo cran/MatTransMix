@@ -1,6 +1,6 @@
-5e00241d1e5d148a065f591bef979e01 *DESCRIPTION
+bbddfc9de43507d961f33e180ebef549 *DESCRIPTION
 6e6c71a40969cf99374c71595fac5d70 *NAMESPACE
-c27175d5a2b904eab4269eab41a50bcf *NEWS
+c12a42ebb02d719bf3fe9ba7b1fe5076 *NEWS
 28074f3634bb17b603853feedb984b37 *R/libMatTransFull.R
 ac137e5a4ca4ab65830bd4c051f3406b *R/plot.R
 3d76bbbb5012d0a5c641424fa94e9061 *R/print.R
@@ -33,7 +33,7 @@ cd35549522a671c1ff4b273d8906ca4a *man/crime.Rd
 f44c8b00c8908859c6f8f94c0f1dec31 *man/print.summary.Rd
 d31d43abb4fac154089418383ee9da73 *src/Makevars
 4dcb5428138cb359bab97e4b880db17c *src/MatTransMix.h
-499ab136cfbd8b4ffaeb96a634764c95 *src/array.h
+1e8194c94cafbc055375ee5d41bca680 *src/array.h
 8e9383adf3bf56f487a27112d6126cec *src/cephes_eigens.h
 bd7abbebebdcc9d09ecfe705c38a22f7 *src/crosen1.c
 8cec648a94f09f8e974400d9687ae2f8 *src/crosen2.c
